@@ -1,0 +1,61 @@
+plugins {
+    id 'java'
+    id "com.bmuschko.tomcat-base" version "2.5"
+}
+
+apply plugin: 'com.bmuschko.tomcat'
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    // https://mvnrepository.com/artifact/org.hibernate/hibernate-core
+    compile group: 'org.hibernate', name: 'hibernate-core', version: '5.4.15.Final'
+    compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: '5.4.15.Final'
+    compile group: 'org.hibernate', name: 'hibernate-validator', version: '6.1.5.Final'
+
+    //compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: '5.4.15.Final'
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.12'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.20'
+
+    // https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api
+    providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
+
+    compile group: 'org.springframework', name: 'spring-context', version: '5.2.6.RELEASE'
+    compile group: 'org.springframework', name: 'spring-core', version: '5.2.6.RELEASE'
+    compile group: 'org.springframework', name: 'spring-beans', version: '5.2.6.RELEASE'
+    compile group: 'org.springframework', name: 'spring-orm', version: '4.0.3.RELEASE'
+    compile group: 'org.springframework', name: 'spring-jdbc', version: '5.2.6.RELEASE'
+    compile group: 'org.springframework', name: 'spring-web', version: '5.2.6.RELEASE'
+    compile group: 'org.springframework', name: 'spring-webmvc', version: '5.2.6.RELEASE'
+    compile group: 'org.springframework.data', name: 'spring-data-commons', version: '2.3.0.RELEASE'
+    compile group: 'org.springframework.data', name: 'spring-data-jpa', version: '2.3.0.RELEASE'
+
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.0'
+
+    // https://mvnrepository.com/artifact/org.projectlombok/lombok
+    compileOnly 'org.projectlombok:lombok:1.18.12'
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
+
+    // https://mvnrepository.com/artifact/org.modelmapper/modelmapper
+    compile group: 'org.modelmapper', name: 'modelmapper', version: '2.3.7'
+
+
+
+    def tomcatVersion = '9.0.1'
+    tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
+            "org.apache.tomcat.embed:tomcat-embed-logging-juli:9.0.0.M6",
+            "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
+}
+
+tomcat {
+    httpProtocol = 'org.apache.coyote.http11.Http11Nio2Protocol'
+    ajpProtocol  = 'org.apache.coyote.ajp.AjpNio2Protocol'
+}
