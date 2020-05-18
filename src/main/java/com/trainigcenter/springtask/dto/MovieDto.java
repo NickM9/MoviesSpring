@@ -1,7 +1,5 @@
 package com.trainigcenter.springtask.dto;
 
-import com.trainigcenter.springtask.domain.Actor;
-import com.trainigcenter.springtask.domain.Genre;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

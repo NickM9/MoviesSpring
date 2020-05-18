@@ -1,9 +1,11 @@
 package com.trainigcenter.springtask.service.impl;
 
 import com.trainigcenter.springtask.dao.GenreDao;
-import com.trainigcenter.springtask.dao.impl.GenreDaoImpl;
 import com.trainigcenter.springtask.domain.Genre;
 import com.trainigcenter.springtask.service.GenreService;
+
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +19,43 @@ public class GenreServiceImpl implements GenreService {
         this.genreDao = genreDao;
     }
 
-    public Genre getGenre(int genreId){
-        return genreDao.findGenre(genreId);
+    public Genre getGenreById(int genreId){
+        return genreDao.findGenreById(genreId);
     }
+
+	@Override
+	public Set<Genre> getAll() {
+		return genreDao.findAll();
+	}
+
+	@Override
+	public Genre getGenreByName(String genreName) {
+		return genreDao.findByGenreName(genreName);
+	}
+
+	@Override
+	public void addGenre(Genre genre) {
+		Genre dbGenre = genreDao.findByGenreName(genre.getName());
+		
+		if (dbGenre == null) {
+			genreDao.addGenre(genre);
+		}
+	}
+
+	@Override
+	public Genre updateGenre(Genre genre) {
+		Genre dbGenre = genreDao.findByGenreName(genre.getName());
+		
+		if (genre != null) {
+			return genreDao.updateGenre(genre);
+		}
+		
+		return dbGenre;
+	}
+
+	@Override
+	public void deleteGenre(Genre genre) {
+		genreDao.deleteGenre(genre);
+	}
 
 }

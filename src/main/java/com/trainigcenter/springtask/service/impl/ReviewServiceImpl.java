@@ -3,6 +3,9 @@ package com.trainigcenter.springtask.service.impl;
 import com.trainigcenter.springtask.dao.ReviewDao;
 import com.trainigcenter.springtask.domain.Review;
 import com.trainigcenter.springtask.service.ReviewService;
+
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,4 +22,9 @@ public class ReviewServiceImpl implements ReviewService {
     public Review getReviewById(int reviewId){
         return reviewDao.findReviewById(reviewId);
     }
+
+	@Override
+	public Set<Review> getAll() {
+		return reviewDao.findAll();
+	}
 }

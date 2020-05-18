@@ -3,6 +3,9 @@ package com.trainigcenter.springtask.service.impl;
 import com.trainigcenter.springtask.dao.ActorDao;
 import com.trainigcenter.springtask.domain.Actor;
 import com.trainigcenter.springtask.service.ActorService;
+
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,4 +22,11 @@ public class ActorServiceImpl implements ActorService {
     public Actor getActorById(int actorId){
         return actorDao.findActorById(actorId);
     }
+
+	@Override
+	public Set<Actor> getAll() {
+		return actorDao.findAll();
+	}
+    
+    
 }

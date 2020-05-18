@@ -1,6 +1,5 @@
 package com.trainigcenter.springtask.domain;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,7 +16,7 @@ import java.util.Set;
 public class Genre {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(name = "name", nullable = false, unique = true)
@@ -26,4 +25,11 @@ public class Genre {
     @ManyToMany(mappedBy = "genres")
     private Set<Movie> genreMovies;
 
+	@Override
+	public String toString() {
+		return "Genre [id=" + id + ", name=" + name + "]";
+	}
+    
+    
+    
 }

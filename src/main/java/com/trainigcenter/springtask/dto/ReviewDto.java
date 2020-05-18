@@ -1,9 +1,7 @@
 package com.trainigcenter.springtask.dto;
 
-import com.trainigcenter.springtask.domain.Movie;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Data
 @NoArgsConstructor

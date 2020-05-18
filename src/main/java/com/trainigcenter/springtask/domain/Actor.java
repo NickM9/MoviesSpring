@@ -1,11 +1,7 @@
 package com.trainigcenter.springtask.domain;
 
 import lombok.*;
-import org.springframework.lang.Nullable;
-
 import javax.persistence.*;
-import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
 
@@ -26,6 +22,6 @@ public class Actor {
     private int birthYear;
 
     @ManyToMany(mappedBy = "actors")
-    private Set<Movie> actorMovies = new HashSet<>();
+    private Set<Movie> actorMovies;
 
 }

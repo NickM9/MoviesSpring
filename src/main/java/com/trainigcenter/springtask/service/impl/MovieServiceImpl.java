@@ -3,6 +3,9 @@ package com.trainigcenter.springtask.service.impl;
 import com.trainigcenter.springtask.dao.MovieDao;
 import com.trainigcenter.springtask.domain.Movie;
 import com.trainigcenter.springtask.service.MovieService;
+
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,4 +22,11 @@ public class MovieServiceImpl implements MovieService {
     public Movie getMovieById(int movieId){
         return movieDao.findMovieById(movieId);
     }
+
+	@Override
+	public Set<Movie> getAll() {
+		return movieDao.findAll();
+	}
+    
+    
 }
