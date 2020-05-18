@@ -11,7 +11,7 @@ public interface GenreService {
 
     public Genre getGenreById(int genreId);
     public Set<Genre> getAll();
-    public Genre getGenreByName(String genreName);
+    public Genre getGenreByName(String name);
     public void addGenre(Genre genre);
     public Genre updateGenre(Genre genre);
     public void deleteGenre(Genre genre);

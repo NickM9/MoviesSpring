@@ -5,19 +5,28 @@ import com.trainigcenter.springtask.dto.Error;
 import com.trainigcenter.springtask.dto.GenreDto;
 import com.trainigcenter.springtask.exception.NotFoundException;
 import com.trainigcenter.springtask.service.GenreService;
+import com.trainigcenter.springtask.service.impl.GenreServiceImpl;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/genres")
 public class GenreRestController {
+	
+	private static  final Logger logger = LogManager.getLogger(GenreRestController.class);
 	
 	private GenreService genreService;
 	private ModelMapper modelMapper;
@@ -67,7 +76,7 @@ public class GenreRestController {
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public void saveGenre(@RequestBody GenreDto genreDto) {
+	public void saveGenre(@Valid @RequestBody GenreDto genreDto) {
 		String genreName = genreDto.getName();
 		
 		genreName = mapGenreName(genreName);
@@ -106,6 +115,19 @@ public class GenreRestController {
 		genreService.deleteGenre(genre);
 	}
 	
+	@ExceptionHandler(NotFoundException.class)
+	@ResponseStatus(value = HttpStatus.NOT_FOUND)
+	private Error genreNotFound(NotFoundException e){
+		Error error = new Error(HttpStatus.NOT_FOUND.value(), e.getName() + " not found");
+		return error;
+	}
+	
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public Error handleBadInput(MethodArgumentNotValidException e) {
+		Error error = new Error(HttpStatus.BAD_REQUEST.value(), "Bad request. You should init the genre name");
+		return error;
+	}
+	
 	private GenreDto converToDto(Genre genre) {
 		return modelMapper.map(genre, GenreDto.class);
 	}
@@ -120,10 +142,4 @@ public class GenreRestController {
 		return genreName;
 	}
 	
-	@ExceptionHandler(NotFoundException.class)
-	@ResponseStatus(value = HttpStatus.NOT_FOUND)
-	private Error genreNotFound(NotFoundException e){
-		Error error = new Error(HttpStatus.NOT_FOUND.value(), e.getName() + " not found");
-		return error;
-	}
 }

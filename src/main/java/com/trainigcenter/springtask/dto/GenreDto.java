@@ -1,5 +1,9 @@
 package com.trainigcenter.springtask.dto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -8,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class GenreDto {
 
+	@NotBlank
     private String name;
     
 }

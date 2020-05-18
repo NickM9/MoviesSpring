@@ -2,6 +2,9 @@ package com.trainigcenter.springtask.dao.impl;
 
 import com.trainigcenter.springtask.dao.GenreDao;
 import com.trainigcenter.springtask.domain.Genre;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashSet;
@@ -15,10 +18,11 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
 
 @Repository
 public class GenreDaoImpl implements GenreDao {
+	
+	private static  final Logger logger = LogManager.getLogger(GenreDaoImpl.class);
 
     @PersistenceContext
     EntityManager entityManager;
@@ -41,17 +45,18 @@ public class GenreDaoImpl implements GenreDao {
     }
 
     @Override
-    public Genre findByGenreName(String genreName) {
+    public Genre findByGenreName(String name) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Genre> criteriaQuery = criteriaBuilder.createQuery(Genre.class);
         Root<Genre> root = criteriaQuery.from(Genre.class);
-        criteriaQuery.select(root );
-        criteriaQuery.where(criteriaBuilder.equal(root.get("name"), genreName));
+        criteriaQuery.select(root);
+        criteriaQuery.where(criteriaBuilder.equal(root.get("name"), name));
         TypedQuery<Genre> typed = entityManager.createQuery(criteriaQuery);
         Genre genre = null;
         try {
         	genre = typed.getSingleResult();
-        } catch (final NoResultException e) {
+        } catch (NoResultException e) {
+        	logger.debug(e);
             genre = null;
         }
         
@@ -60,6 +65,7 @@ public class GenreDaoImpl implements GenreDao {
 
 	@Override
 	public void addGenre(Genre genre) {
+		System.out.println(genre);
 		entityManager.persist(genre);
 	}
 
@@ -71,7 +77,6 @@ public class GenreDaoImpl implements GenreDao {
 
 	@Override
 	public void deleteGenre(Genre genre) {
-		System.out.println(genre);
 		entityManager.remove(entityManager.contains(genre) ? genre : entityManager.merge(genre));
 	}
 	
