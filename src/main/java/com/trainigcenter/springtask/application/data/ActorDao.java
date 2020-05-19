@@ -1,4 +1,4 @@
-package com.trainigcenter.springtask.application.dao;
+package com.trainigcenter.springtask.application.data;
 
 import com.trainigcenter.springtask.application.domain.Actor;
 

@@ -1,6 +1,6 @@
-package com.trainigcenter.springtask.application.dao.impl;
+package com.trainigcenter.springtask.application.data.impl;
 
-import com.trainigcenter.springtask.application.dao.MovieDao;
+import com.trainigcenter.springtask.application.data.MovieDao;
 import com.trainigcenter.springtask.application.domain.Genre;
 import com.trainigcenter.springtask.application.domain.Movie;
 import org.apache.logging.log4j.LogManager;

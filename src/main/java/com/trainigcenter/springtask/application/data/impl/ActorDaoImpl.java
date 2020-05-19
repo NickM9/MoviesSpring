@@ -1,6 +1,6 @@
-package com.trainigcenter.springtask.application.dao.impl;
+package com.trainigcenter.springtask.application.data.impl;
 
-import com.trainigcenter.springtask.application.dao.ActorDao;
+import com.trainigcenter.springtask.application.data.ActorDao;
 import com.trainigcenter.springtask.application.domain.Actor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

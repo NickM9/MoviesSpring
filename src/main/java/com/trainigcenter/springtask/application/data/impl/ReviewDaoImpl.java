@@ -1,6 +1,6 @@
-package com.trainigcenter.springtask.application.dao.impl;
+package com.trainigcenter.springtask.application.data.impl;
 
-import com.trainigcenter.springtask.application.dao.ReviewDao;
+import com.trainigcenter.springtask.application.data.ReviewDao;
 import com.trainigcenter.springtask.application.domain.Review;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -1,6 +1,6 @@
 package com.trainigcenter.springtask.application.service.impl;
 
-import com.trainigcenter.springtask.application.dao.GenreDao;
+import com.trainigcenter.springtask.application.data.GenreDao;
 import com.trainigcenter.springtask.application.domain.Genre;
 import com.trainigcenter.springtask.application.service.GenreService;
 import org.apache.logging.log4j.LogManager;
