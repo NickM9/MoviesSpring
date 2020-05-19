@@ -1,17 +1,23 @@
 package com.trainigcenter.springtask.dao;
 
-import java.util.Set;
-
 import com.trainigcenter.springtask.domain.Actor;
-import com.trainigcenter.springtask.domain.Genre;
+
+import java.util.Set;
 
 public interface ActorDao {
 
-    public Actor findActorById(int actorId);
-    public Set<Actor> findAll();
-    public Actor findByActorName(String name);
-    public void addActor(Actor actor);
-    public Actor updateActor(Actor actor);
-    public void deleteActor(Actor actor);
+    Actor findActorById(int actorId);
+
+    Set<Actor> findAll();
+
+    Actor findByActorName(String name);
+
+    void addActor(Actor actor);
+
+    Actor updateActor(Actor actor);
+
+    void deleteActor(Actor actor);
+
+    Actor findByActorIdWithMovies(Integer id);
 
 }

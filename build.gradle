@@ -15,6 +15,10 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
+    // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.3'
+
+
     // https://mvnrepository.com/artifact/org.hibernate/hibernate-core
     compile group: 'org.hibernate', name: 'hibernate-core', version: '5.4.15.Final'
     compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: '5.4.15.Final'
@@ -39,6 +43,11 @@ dependencies {
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.0'
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.11.0'
+
+
+
+
 
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
     compileOnly 'org.projectlombok:lombok:1.18.12'
@@ -49,13 +58,6 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.modelmapper/modelmapper
     compile group: 'org.modelmapper', name: 'modelmapper', version: '2.3.7'
-
-
-
-    def tomcatVersion = '9.0.1'
-    tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
-            "org.apache.tomcat.embed:tomcat-embed-logging-juli:9.0.0.M6",
-            "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
 }
 
 tomcat {

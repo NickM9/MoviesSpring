@@ -1,12 +1,18 @@
 package com.trainigcenter.springtask.service;
 
-import java.util.Set;
-
 import com.trainigcenter.springtask.domain.Review;
+
+import java.util.Set;
 
 public interface ReviewService {
 
-    public Review getReviewById(int reviewId);
-    public Set<Review> getAll();
+    Review getReviewById(int reviewId);
 
+    Set<Review> getAll();
+
+    void addReview(Review review);
+
+    Review updateReview(Review review);
+
+    void deleteReview(Review review);
 }

@@ -3,18 +3,24 @@ package com.trainigcenter.springtask.dao;
 import com.trainigcenter.springtask.domain.Genre;
 import org.springframework.stereotype.Repository;
 
-import java.util.Set;
-
 import javax.transaction.Transactional;
+import java.util.Set;
 
 @Repository
 @Transactional
 public interface GenreDao {
 
-    public Genre findGenreById(int genreId);
-    public Set<Genre> findAll();
-    public Genre findByGenreName(String name);
-    public void addGenre(Genre genre);
-    public Genre updateGenre(Genre genre);
-    public void deleteGenre(Genre genre);
+    Genre findGenreById(Integer genreId);
+
+    Genre findGenreByName(String name);
+
+    Set<Genre> findAll();
+
+    void addGenre(Genre genre);
+
+    Genre updateGenre(Genre genre);
+
+    void deleteGenre(Genre genre);
+
+    Genre findByGenreIdWithMovies(Integer id);
 }

@@ -1,16 +1,23 @@
 package com.trainigcenter.springtask.service;
 
-import java.util.Set;
-
 import com.trainigcenter.springtask.domain.Actor;
+
+import java.util.Set;
 
 public interface ActorService {
 
-    public Actor getActorById(int actorId);
-    public Set<Actor> getAll();
-    public Actor getActorByName(String name);
-    public void addActor(Actor actor);
-    public Actor updateActor(Actor actor);
-    public void deleteActor(Actor actor);
+    Actor getActorById(Integer actorId);
+
+    Set<Actor> getAll();
+
+    Actor getActorByName(String name);
+
+    void addActor(Actor actor);
+
+    Actor updateActor(Actor actor);
+
+    boolean deleteActor(Actor actor);
+
+    Actor getActorByIdWithMovies(Integer id);
 
 }

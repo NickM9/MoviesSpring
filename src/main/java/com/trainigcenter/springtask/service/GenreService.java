@@ -1,18 +1,22 @@
 package com.trainigcenter.springtask.service;
 
 import com.trainigcenter.springtask.domain.Genre;
+import org.springframework.stereotype.Service;
 
 import java.util.Set;
-
-import org.springframework.stereotype.Service;
 
 @Service
 public interface GenreService {
 
-    public Genre getGenreById(int genreId);
-    public Set<Genre> getAll();
-    public Genre getGenreByName(String name);
-    public void addGenre(Genre genre);
-    public Genre updateGenre(Genre genre);
-    public void deleteGenre(Genre genre);
+    Genre getGenreById(int genreId);
+
+    Set<Genre> getAll();
+
+    void addGenre(Genre genre);
+
+    Genre updateGenre(Genre genre);
+
+    boolean deleteGenre(Genre genre);
+
+    Genre getGenreByIdWithMovies(Integer id);
 }

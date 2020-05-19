@@ -1,13 +1,20 @@
 package com.trainigcenter.springtask.dao;
 
-import java.util.Set;
-
 import com.trainigcenter.springtask.domain.Review;
+
+import java.util.Set;
 
 public interface ReviewDao {
 
-    public Review findReviewById(int reviewId);
-    
-    public Set<Review> findAll();
+    Review findReviewById(int reviewId);
 
+    Set<Review> findAll();
+
+    void addReview(Review review);
+
+    Review findByMovieIdAndAuthorName(Integer movieId, String authorName);
+
+    Review updateReview(Review review);
+
+    void deleteReview(Review review);
 }

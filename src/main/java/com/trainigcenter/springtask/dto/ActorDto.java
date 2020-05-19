@@ -3,11 +3,18 @@ package com.trainigcenter.springtask.dto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+
 @Data
 @NoArgsConstructor
 public class ActorDto {
 
-    private String name;
-    private int birthYear;
+    private Integer id;
 
+    @NotBlank
+    private String name;
+
+    @Min(1900)
+    private int birthYear;
 }
