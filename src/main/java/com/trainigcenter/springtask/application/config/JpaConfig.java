@@ -22,6 +22,7 @@ import java.util.Properties;
 @EnableTransactionManagement
 @PropertySource({ "classpath:database.properties" })
 public class JpaConfig {
+
     @Autowired
     private Environment env;
 
