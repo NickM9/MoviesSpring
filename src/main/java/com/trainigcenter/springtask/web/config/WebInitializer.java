@@ -1,25 +1,23 @@
 package com.trainigcenter.springtask.web.config;
 
-import com.trainigcenter.springtask.application.config.AppConfig;
+import com.trainigcenter.springtask.config.AppConfig;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 public class WebInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 
-	@Override
-	protected Class<?>[] getRootConfigClasses() {
-		return new Class[] {AppConfig.class};
-	}
+    @Override
+    protected Class<?>[] getRootConfigClasses() {
+        return new Class[]{AppConfig.class};
+    }
 
-	@Override
-	protected Class<?>[] getServletConfigClasses() {
-		return null;
-	}
+    @Override
+    protected Class<?>[] getServletConfigClasses() {
+        return null;
+    }
 
-	@Override
-	protected String[] getServletMappings() {
-		return new String[] {"/"};
-	}
-	
-	
+    @Override
+    protected String[] getServletMappings() {
+        return new String[]{"/"};
+    }
 
 }

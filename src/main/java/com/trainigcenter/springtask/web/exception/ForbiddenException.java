@@ -1,14 +1,20 @@
 package com.trainigcenter.springtask.web.exception;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @Setter
-@AllArgsConstructor
-public class ForbiddenException extends RuntimeException {
+public class ForbiddenException extends WebException {
 
-    private String name;
+    private static final HttpStatus status = HttpStatus.FORBIDDEN;
 
+    public ForbiddenException() {
+        super(status);
+    }
+
+    public ForbiddenException(String message) {
+        super(status, message);
+    }
 }

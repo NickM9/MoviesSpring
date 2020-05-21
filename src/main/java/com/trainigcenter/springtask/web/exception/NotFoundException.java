@@ -1,14 +1,22 @@
 package com.trainigcenter.springtask.web.exception;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @Setter
-@AllArgsConstructor
-public class NotFoundException extends RuntimeException {
+public class NotFoundException extends WebException {
 
-    private String name;
+    private static final HttpStatus status = HttpStatus.NOT_FOUND;
+
+
+    public NotFoundException() {
+        super(status);
+    }
+
+    public NotFoundException(String message) {
+        super(status, message);
+    }
 
 }
