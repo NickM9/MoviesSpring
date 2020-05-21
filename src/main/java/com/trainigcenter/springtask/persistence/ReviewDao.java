@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface ReviewDao {
 
-    Review findById(Integer id);
+    Review findById(Integer id, Integer movieId);
 
-    List<Review> findAll(int movieId, int page, int size);
+    List<Review> findAll(Integer movieId, int page, int size);
 
     Review add(Review review);
 

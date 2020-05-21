@@ -15,6 +15,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class GenreDaoImpl implements GenreDao {
@@ -57,7 +58,7 @@ public class GenreDaoImpl implements GenreDao {
         CriteriaQuery<Genre> criteriaQuery = criteriaBuilder.createQuery(Genre.class);
 
         Root<Genre> root = criteriaQuery.from(Genre.class);
-        root.fetch("genreMovies", JoinType.INNER);
+        root.fetch("genreMovies", JoinType.LEFT);
 
         criteriaQuery.select(root);
         criteriaQuery.where(criteriaBuilder.equal(root.get("id"), id));
@@ -69,11 +70,9 @@ public class GenreDaoImpl implements GenreDao {
             genre = typed.getSingleResult();
         } catch (NoResultException e) {
             logger.debug(e);
-            genre = null;
         }
 
         return genre;
-
     }
 
     @Override
@@ -85,7 +84,6 @@ public class GenreDaoImpl implements GenreDao {
         query.select(genresRoot);
 
         return entityManager.createQuery(query).getResultList();
-
     }
 
     @Override

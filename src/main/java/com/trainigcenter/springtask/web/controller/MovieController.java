@@ -95,7 +95,7 @@ public class MovieController {
     @GetMapping("/{id}")
     public MovieDto getMovieById(@PathVariable("id") int id) {
         Movie movie = Optional.ofNullable(movieService.getById(id))
-                              .orElseThrow(() -> new NotFoundException("Movie id:" + id + " nor found"));
+                              .orElseThrow(() -> new NotFoundException("Movie id:" + id + " not found"));
 
         return convertToDto(movie);
     }
@@ -110,13 +110,15 @@ public class MovieController {
     }
 
     @PutMapping("/{id}")
-    public MovieDto updateMovie(@PathVariable("id") Integer id, @Valid @RequestBody MovieDto movieDto) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public MovieDto updateMovie(@PathVariable("id") Integer id,
+                                @Valid @RequestBody MovieDto movieDto) {
 
         Movie movie = convertFromDto(movieDto);
         movie.setId(id);
 
         movie = Optional.ofNullable(movieService.update(movie))
-                        .orElseThrow(() -> new NotFoundException("Movie id:" + id + " nor found"));
+                        .orElseThrow(() -> new NotFoundException("Movie id:" + id + " not found"));
 
         return convertToDto(movie);
     }
@@ -125,7 +127,7 @@ public class MovieController {
     public void deleteMovie(@PathVariable("id") Integer id) {
 
         Movie movie = Optional.ofNullable(movieService.getById(id))
-                              .orElseThrow(() -> new NotFoundException("Movie id:" + id + " nor found"));
+                              .orElseThrow(() -> new NotFoundException("Movie id:" + id + " not found"));
 
         movieService.delete(movie);
     }

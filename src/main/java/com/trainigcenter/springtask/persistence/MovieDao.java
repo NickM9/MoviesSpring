@@ -12,8 +12,6 @@ public interface MovieDao {
 
     List<Movie> findAll(int page, int size);
 
-    //Integer findCount();
-
     Movie add(Movie movie);
 
     Movie update(Movie movie);

@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface ReviewService {
 
-    Review getById(Integer id);
+    Review getById(Integer id, Integer movieId);
 
-    List<Review> getAll(int movieId, int page, int size);
+    List<Review> getAll(Integer movieId, int page, int size);
 
     Review add(Review review);
 

@@ -50,7 +50,7 @@ public class GenreController {
     public List<GenreDto> getAll() {
         List<Genre> allGenres = genreService.getAll();
         return allGenres.stream()
-                        .map(this::converToDto)
+                        .map(this::convertToDto)
                         .collect(Collectors.toList());
     }
 
@@ -59,7 +59,7 @@ public class GenreController {
         Genre genre = Optional.ofNullable(genreService.getById(id))
                               .orElseThrow(() -> new NotFoundException("Genre id:" + id + " not found"));
 
-        return converToDto(genre);
+        return convertToDto(genre);
     }
 
     @PostMapping
@@ -69,11 +69,13 @@ public class GenreController {
         genreDto.setName(mapGenreName(genreDto.getName()));
 
         Genre genre = genreService.add(convertFromDto(genreDto));
-        return converToDto(genre);
+        return convertToDto(genre);
     }
 
     @PutMapping("/{id}")
-    public GenreDto updateGenre(@PathVariable("id") Integer id, @Valid @RequestBody GenreDto genreDto) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public GenreDto updateGenre(@PathVariable("id") Integer id,
+                                @Valid @RequestBody GenreDto genreDto) {
 
         Genre genre = convertFromDto(genreDto);
         genre.setId(id);
@@ -82,7 +84,7 @@ public class GenreController {
         genre = Optional.ofNullable(genreService.update(genre))
                         .orElseThrow(() -> new NotFoundException("Genre id:" + id + " not found"));
 
-        return converToDto(genre);
+        return convertToDto(genre);
     }
 
     @DeleteMapping("/{id}")
@@ -94,7 +96,7 @@ public class GenreController {
         boolean isDeleted = genreService.delete(genre);
 
         if (!isDeleted) {
-            throw new ForbiddenException(genre.getName());
+            throw new ForbiddenException(genre.getName() + " is take part in movies");
         }
 
     }
@@ -111,7 +113,7 @@ public class GenreController {
         return new Error(HttpStatus.BAD_REQUEST.value(), "You need to initialize all fields");
     }
 
-    private GenreDto converToDto(Genre genre) {
+    private GenreDto convertToDto(Genre genre) {
         return modelMapper.map(genre, GenreDto.class);
     }
 

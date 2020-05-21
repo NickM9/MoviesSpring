@@ -1,5 +1,6 @@
 package com.trainigcenter.springtask.persistence.impl;
 
+import com.trainigcenter.springtask.domain.Actor;
 import com.trainigcenter.springtask.domain.Genre;
 import com.trainigcenter.springtask.domain.Movie;
 import com.trainigcenter.springtask.persistence.MovieDao;
@@ -8,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -79,30 +81,23 @@ public class MovieDaoImpl implements MovieDao {
     }
 
     @Override
-    public List<Movie> findByRating(int raiting, int page, int size) {
+    public List<Movie> findByRating(int rating, int page, int size) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Movie> query = criteriaBuilder.createQuery(Movie.class);
+
         Root<Movie> moviesRoot = query.from(Movie.class);
         //SetJoin<Movie, Review> mJoin = moviesRoot.joinSet("reviews");
         moviesRoot.fetch("reviews", JoinType.LEFT);
+
         query.select(moviesRoot);
-        query.where(criteriaBuilder.greaterThan(moviesRoot.get("raiting"), raiting));
-        query.orderBy(criteriaBuilder.asc(moviesRoot.get("title")));
+        query.where(criteriaBuilder.greaterThan(moviesRoot.get("reviews").get("rating"), rating));
+
+        query.orderBy(criteriaBuilder.asc(moviesRoot.get("rating")));
         List<Movie> movies = entityManager.createQuery(query).getResultList();
 
+        System.out.println(movies);
         return movies;
     }
-
-//    @Override
-//    public Integer findCount() {
-//        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-//        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-//
-//        Root<Movie> root = criteriaQuery.from(Movie.class);
-//        criteriaQuery.select(criteriaBuilder.count(root));
-//
-//        return Math.toIntExact(entityManager.createQuery(criteriaQuery).getSingleResult());
-//    }
 
     @Override
     public Movie add(Movie movie) {

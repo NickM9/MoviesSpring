@@ -24,8 +24,29 @@ public class ReviewDaoImpl implements ReviewDao {
     EntityManager entityManager;
 
     @Override
-    public Review findById(Integer id) {
-        return entityManager.find(Review.class, id);
+    public Review findById(Integer id, Integer movieId) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Review> criteriaQuery = criteriaBuilder.createQuery(Review.class);
+        Root<Review> root = criteriaQuery.from(Review.class);
+
+        criteriaQuery.select(root);
+        criteriaQuery.where(
+                criteriaBuilder.equal(root.get("movie").get("id"), movieId),
+                criteriaBuilder.equal(root.get("id"), id)
+        );
+
+
+        TypedQuery<Review> typed = entityManager.createQuery(criteriaQuery);
+        Review review = null;
+
+        try {
+            review = typed.getSingleResult();
+        } catch (NoResultException e) {
+            logger.debug(e);
+            review = null;
+        }
+
+        return review;
     }
 
     @Override
@@ -55,7 +76,7 @@ public class ReviewDaoImpl implements ReviewDao {
     }
 
     @Override
-    public List<Review> findAll(int movieId, int page, int size) {
+    public List<Review> findAll(Integer movieId, int page, int size) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Review> criteriaQuery = criteriaBuilder.createQuery(Review.class);
         Root<Review> root = criteriaQuery.from(Review.class);

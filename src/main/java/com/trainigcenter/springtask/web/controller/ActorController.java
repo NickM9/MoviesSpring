@@ -56,7 +56,7 @@ public class ActorController {
     @GetMapping("/{id}")
     public ActorDto getActorById(@PathVariable Integer id) {
         Actor actor = Optional.ofNullable(actorService.getById(id))
-                              .orElseThrow(() -> new NotFoundException("Actor id:" + id + " nor found"));
+                              .orElseThrow(() -> new NotFoundException("Actor id:" + id + " not found"));
 
         return convertToDto(actor);
     }
@@ -71,12 +71,15 @@ public class ActorController {
     }
 
     @PutMapping("/{id}")
-    public ActorDto updateActor(@PathVariable("id") Integer id, @Valid @RequestBody ActorDto actorDto) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public ActorDto updateActor(@PathVariable("id") Integer id,
+                                @Valid @RequestBody ActorDto actorDto) {
+
         Actor actor = convertFromDto(actorDto);
         actor.setId(id);
 
         actor = Optional.ofNullable(actorService.update(actor))
-                        .orElseThrow(() -> new NotFoundException("Actor id:" + id + " nor found"));
+                        .orElseThrow(() -> new NotFoundException("Actor id:" + id + " not found"));
 
         return convertToDto(actor);
     }
@@ -85,12 +88,12 @@ public class ActorController {
     public void deleteActor(@PathVariable("id") Integer id) {
 
         Actor actor = Optional.ofNullable(actorService.getByIdWithMovies(id))
-                              .orElseThrow(() -> new NotFoundException("Actor id:" + id + " nor found"));
+                              .orElseThrow(() -> new NotFoundException("Actor id:" + id + " not found"));
 
         boolean isDeleted = actorService.delete(actor);
 
         if (!isDeleted) {
-            throw new ForbiddenException(actor.getName());
+            throw new ForbiddenException(actor.getName() + " is take part in movies");
         }
 
     }

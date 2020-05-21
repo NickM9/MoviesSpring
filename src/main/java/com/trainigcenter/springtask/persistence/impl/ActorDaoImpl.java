@@ -40,7 +40,6 @@ public class ActorDaoImpl implements ActorDao {
         return entityManager.createQuery(query).getResultList();
     }
 
-
     @Override
     public Actor findByName(String name) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -69,7 +68,7 @@ public class ActorDaoImpl implements ActorDao {
         CriteriaQuery<Actor> criteriaQuery = criteriaBuilder.createQuery(Actor.class);
 
         Root<Actor> root = criteriaQuery.from(Actor.class);
-        root.fetch("actorMovies", JoinType.INNER);
+        root.fetch("actorMovies", JoinType.LEFT);
 
         criteriaQuery.select(root);
         criteriaQuery.where(criteriaBuilder.equal(root.get("id"), id));
@@ -86,7 +85,6 @@ public class ActorDaoImpl implements ActorDao {
 
         return actor;
     }
-
 
     @Override
     public Actor add(Actor actor) {

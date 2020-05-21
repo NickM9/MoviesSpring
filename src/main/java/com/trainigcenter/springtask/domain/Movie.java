@@ -75,4 +75,5 @@ public class Movie {
         result = 31 * result + (actors != null ? actors.hashCode() : 0);
         return result;
     }
+
 }

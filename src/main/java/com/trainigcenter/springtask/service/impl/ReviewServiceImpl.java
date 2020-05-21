@@ -24,12 +24,12 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Review getById(Integer id) {
-        return reviewDao.findById(id);
+    public Review getById(Integer id, Integer movieId) {
+        return reviewDao.findById(id, movieId);
     }
 
     @Override
-    public List<Review> getAll(int movieId, int page, int size) {
+    public List<Review> getAll(Integer movieId, int page, int size) {
         return reviewDao.findAll(movieId, page, size);
     }
 
@@ -49,7 +49,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional
     public Review update(Review review) {
-        Review dbReview = reviewDao.findById(review.getId());
+        Review dbReview = reviewDao.findById(review.getId(), review.getMovie().getId());
 
         if (dbReview != null) {
             return reviewDao.update(review);
@@ -59,6 +59,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Transactional
     public void delete(Review review) {
         reviewDao.delete(review);
     }

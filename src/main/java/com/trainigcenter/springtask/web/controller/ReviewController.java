@@ -1,6 +1,8 @@
 package com.trainigcenter.springtask.web.controller;
 
+import com.trainigcenter.springtask.domain.Movie;
 import com.trainigcenter.springtask.domain.Review;
+import com.trainigcenter.springtask.service.MovieService;
 import com.trainigcenter.springtask.service.ReviewService;
 import com.trainigcenter.springtask.web.dto.Error;
 import com.trainigcenter.springtask.web.dto.ReviewDto;
@@ -38,11 +40,13 @@ public class ReviewController {
     private static final Logger logger = LogManager.getLogger(ReviewController.class);
 
     private final ReviewService reviewService;
+    private final MovieService movieService;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public ReviewController(ReviewService reviewService, ModelMapper modelMapper) {
+    public ReviewController(ReviewService reviewService, MovieService movieService, ModelMapper modelMapper) {
         this.reviewService = reviewService;
+        this.movieService = movieService;
         this.modelMapper = modelMapper;
     }
 
@@ -50,6 +54,9 @@ public class ReviewController {
     public List<ReviewDto> getAll(@RequestParam(value = "page", defaultValue = "1") int page,
                                   @RequestParam(value = "size", defaultValue = "2") int size,
                                   @PathVariable("movieId") int movieId) {
+        Optional.ofNullable(movieService.getById(movieId))
+                .orElseThrow(() -> new NotFoundException("Movie id:" + movieId + " not found"));
+
         List<Review> allReviews = reviewService.getAll(movieId, page, size);
         return allReviews.stream()
                          .map(this::convertToDto)
@@ -59,8 +66,12 @@ public class ReviewController {
     @GetMapping("/{id}")
     public ReviewDto getReviewById(@PathVariable("movieId") int movieId,
                                    @PathVariable("id") Integer id) {
-        Review review = Optional.ofNullable(reviewService.getById(id))
-                                .orElseThrow(() -> new NotFoundException("Review id:" + id + " nor found"));
+
+        Optional.ofNullable(movieService.getById(movieId))
+                .orElseThrow(() -> new NotFoundException("Movie id:" + movieId + " not found"));
+
+        Review review = Optional.ofNullable(reviewService.getById(id, movieId))
+                                .orElseThrow(() -> new NotFoundException("Review id:" + id + " not found"));
 
         return convertToDto(review);
     }
@@ -69,6 +80,10 @@ public class ReviewController {
     @ResponseStatus(HttpStatus.CREATED)
     public ReviewDto saveReview(@PathVariable("movieId") int movieId,
                                 @Valid @RequestBody ReviewDto reviewDto) {
+
+        Optional.ofNullable(movieService.getById(movieId))
+                .orElseThrow(() -> new NotFoundException("Movie id:" + movieId + " not found"));
+
         reviewDto.setId(null);
         Review review = reviewService.add(convertFromDto(reviewDto));
 
@@ -79,11 +94,15 @@ public class ReviewController {
     public ReviewDto updateReview(@PathVariable("movieId") int movieId,
                                   @PathVariable("id") Integer id,
                                   @Valid @RequestBody ReviewDto reviewDto) {
+
+        Optional.ofNullable(movieService.getById(movieId))
+                .orElseThrow(() -> new NotFoundException("Movie id:" + movieId + " not found"));
+
         Review review = convertFromDto(reviewDto);
         review.setId(id);
 
         review = Optional.ofNullable(reviewService.update(review))
-                         .orElseThrow(() -> new NotFoundException("Review id:" + id + " nor found"));
+                         .orElseThrow(() -> new NotFoundException("Review id:" + id + " not found"));
 
         return convertToDto(review);
     }
@@ -92,8 +111,11 @@ public class ReviewController {
     public void deleteReview(@PathVariable("movieId") int movieId,
                              @PathVariable("id") Integer id) {
 
-        Review review = Optional.ofNullable(reviewService.getById(id))
-                                .orElseThrow(() -> new NotFoundException("Review id:" + id + " nor found"));
+        Optional.ofNullable(movieService.getById(movieId))
+                .orElseThrow(() -> new NotFoundException("Movie id:" + movieId + " not found"));
+
+        Review review = Optional.ofNullable(reviewService.getById(id, movieId))
+                                .orElseThrow(() -> new NotFoundException("Review id:" + id + " not found"));
 
         reviewService.delete(review);
     }
