@@ -6,17 +6,20 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @Setter
-public class NotFoundException extends WebException {
-
-    private static final HttpStatus status = HttpStatus.NOT_FOUND;
-
+public class NotFoundException extends RuntimeException {
 
     public NotFoundException() {
-        super(status);
     }
 
     public NotFoundException(String message) {
-        super(status, message);
+        super(message);
     }
 
+    public NotFoundException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public NotFoundException(Throwable cause) {
+        super(cause);
+    }
 }

@@ -28,11 +28,11 @@ ALTER TABLE public.genres
 -- Movies table
 CREATE TABLE public.movie
 (
-    id integer NOT NULL DEFAULT nextval('movie_id_seq'::regclass),
-    title character varying(70) COLLATE pg_catalog."default" NOT NULL,
-    description character varying(140) COLLATE pg_catalog."default" NOT NULL,
+    id serial NOT NULL,
+    title character varying(140) NOT NULL,
+    description character varying(500) NOT NULL,
     duration integer NOT NULL,
-    CONSTRAINT movie_pkey PRIMARY KEY (id)
+    PRIMARY KEY (id)
 )
 
 TABLESPACE pg_default;

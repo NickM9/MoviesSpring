@@ -14,8 +14,4 @@ public class Error {
     private int code;
     private String message;
 
-    public Error(String message) {
-        this.message = message;
-    }
-
 }
