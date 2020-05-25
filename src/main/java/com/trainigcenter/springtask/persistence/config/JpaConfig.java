@@ -19,8 +19,6 @@ import java.util.Objects;
 import java.util.Properties;
 
 @Configuration
-@EnableTransactionManagement
-@PropertySource({"classpath:database.properties"})
 public class JpaConfig {
 
     @Autowired

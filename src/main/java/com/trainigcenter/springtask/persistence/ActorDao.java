@@ -3,21 +3,22 @@ package com.trainigcenter.springtask.persistence;
 import com.trainigcenter.springtask.domain.Actor;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ActorDao {
 
-    Actor findById(Integer id);
+    Optional<Actor> findById(Integer id);
 
-    List<Actor> findAll();
+    Optional<List<Actor>> findAll();
 
-    Actor findByName(String name);
+    Optional<Actor> findByName(String name);
 
-    Actor add(Actor actor);
+    Actor create(Actor actor);
 
     Actor update(Actor actor);
 
-    void delete(Actor actor);
+    void delete(Integer id);
 
-    Actor findByIdWithMovies(Integer id);
+    Optional<Actor> findByIdWithMovies(Integer id);
 
 }

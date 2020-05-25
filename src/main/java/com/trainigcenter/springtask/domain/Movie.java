@@ -18,6 +18,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.time.Duration;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -51,29 +52,20 @@ public class Movie {
     @OneToMany(mappedBy = "movie")
     private List<Review> reviews;
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Movie movie = (Movie) o;
-
-        if (title != null ? !title.equals(movie.title) : movie.title != null) return false;
-        if (description != null ? !description.equals(movie.description) : movie.description != null) return false;
-        if (duration != null ? !duration.equals(movie.duration) : movie.duration != null) return false;
-        if (genres != null ? !genres.equals(movie.genres) : movie.genres != null) return false;
-        return actors != null ? actors.equals(movie.actors) : movie.actors == null;
+        return Objects.equals(title, movie.title) &&
+                Objects.equals(description, movie.description) &&
+                Objects.equals(duration, movie.duration) &&
+                Objects.equals(genres, movie.genres) &&
+                Objects.equals(actors, movie.actors);
     }
 
     @Override
     public int hashCode() {
-        int result = title != null ? title.hashCode() : 0;
-        result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (duration != null ? duration.hashCode() : 0);
-        result = 31 * result + (genres != null ? genres.hashCode() : 0);
-        result = 31 * result + (actors != null ? actors.hashCode() : 0);
-        return result;
+        return Objects.hash(title, description, duration, genres, actors);
     }
-
 }

@@ -1,18 +1,20 @@
 package com.trainigcenter.springtask.service;
 
 import com.trainigcenter.springtask.domain.Review;
+import com.trainigcenter.springtask.domain.util.Pagination;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReviewService {
 
-    Review getById(Integer id, Integer movieId);
+    Optional<Review> getById(Integer id, Integer movieId);
 
-    List<Review> getAll(Integer movieId, int page, int size);
+    Optional<Pagination<Review>> getAll(Integer movieId, int page, int size);
 
-    Review add(Review review);
+    Review create(Review review);
 
     Review update(Review review);
 
-    void delete(Review review);
+    void delete(Integer id);
 }

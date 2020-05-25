@@ -14,8 +14,10 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class GenreDaoImpl implements GenreDao {
@@ -23,15 +25,15 @@ public class GenreDaoImpl implements GenreDao {
     private static final Logger logger = LogManager.getLogger(GenreDaoImpl.class);
 
     @PersistenceContext
-    EntityManager entityManager;
+    private EntityManager entityManager;
 
     @Override
-    public Genre findById(Integer id) {
-        return entityManager.find(Genre.class, id);
+    public Optional<Genre> findById(Integer id) {
+        return Optional.ofNullable(entityManager.find(Genre.class, id));
     }
 
     @Override
-    public Genre findByName(String name) {
+    public Optional<Genre> findByName(String name) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Genre> criteriaQuery = criteriaBuilder.createQuery(Genre.class);
         Root<Genre> root = criteriaQuery.from(Genre.class);
@@ -46,14 +48,13 @@ public class GenreDaoImpl implements GenreDao {
             genre = typed.getSingleResult();
         } catch (NoResultException e) {
             logger.debug(e);
-            genre = null;
         }
 
-        return genre;
+        return Optional.ofNullable(genre);
     }
 
     @Override
-    public Genre findByIdWithMovies(Integer id) {
+    public Optional<Genre> findByIdWithMovies(Integer id) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Genre> criteriaQuery = criteriaBuilder.createQuery(Genre.class);
 
@@ -72,22 +73,22 @@ public class GenreDaoImpl implements GenreDao {
             logger.debug(e);
         }
 
-        return genre;
+        return Optional.ofNullable(genre);
     }
 
     @Override
-    public List<Genre> findAll() {
+    public Optional<List<Genre>> findAll() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Genre> query = criteriaBuilder.createQuery(Genre.class);
 
         Root<Genre> genresRoot = query.from(Genre.class);
         query.select(genresRoot);
 
-        return entityManager.createQuery(query).getResultList();
+        return Optional.ofNullable(entityManager.createQuery(query).getResultList());
     }
 
     @Override
-    public Genre add(Genre genre) {
+    public Genre create(Genre genre) {
         entityManager.persist(genre);
         return genre;
     }
@@ -98,7 +99,10 @@ public class GenreDaoImpl implements GenreDao {
     }
 
     @Override
-    public void delete(Genre genre) {
+    @Transactional
+    public void delete(Integer id) {
+        Genre genre = entityManager.find(Genre.class, id);
+
         entityManager.remove(entityManager.contains(genre) ? genre : entityManager.merge(genre));
     }
 

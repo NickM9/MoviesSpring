@@ -13,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import java.util.Objects;
 import java.util.Set;
 
 
@@ -39,19 +40,14 @@ public class Actor {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Actor actor = (Actor) o;
-
-        if (birthYear != actor.birthYear) return false;
-        if (id != null ? !id.equals(actor.id) : actor.id != null) return false;
-        return name != null ? name.equals(actor.name) : actor.name == null;
+        return birthYear == actor.birthYear &&
+                Objects.equals(id, actor.id) &&
+                Objects.equals(name, actor.name);
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + birthYear;
-        return result;
+        return Objects.hash(id, name, birthYear);
     }
 }

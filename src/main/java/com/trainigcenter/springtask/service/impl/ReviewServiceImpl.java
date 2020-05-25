@@ -1,8 +1,11 @@
 package com.trainigcenter.springtask.service.impl;
 
 import com.trainigcenter.springtask.domain.Review;
+import com.trainigcenter.springtask.domain.util.Pagination;
 import com.trainigcenter.springtask.persistence.ReviewDao;
 import com.trainigcenter.springtask.service.ReviewService;
+import com.trainigcenter.springtask.web.exception.MethodNotAllowedException;
+import com.trainigcenter.springtask.web.exception.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReviewServiceImpl implements ReviewService {
@@ -24,43 +28,39 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Review getById(Integer id, Integer movieId) {
+    public Optional<Review> getById(Integer id, Integer movieId) {
         return reviewDao.findById(id, movieId);
     }
 
     @Override
-    public List<Review> getAll(Integer movieId, int page, int size) {
+    public Optional<Pagination<Review>> getAll(Integer movieId, int page, int size) {
         return reviewDao.findAll(movieId, page, size);
     }
 
     @Override
     @Transactional
-    public Review add(Review review) {
+    public Review create(Review review) {
+        Optional<Review> dbReview = reviewDao.findByMovieIdAndAuthorName(review.getMovie().getId(), review.getAuthorName());
 
-        Review dbReview = reviewDao.findByMovieIdAndAuthorName(review.getMovie().getId(), review.getAuthorName());
-
-        if (dbReview == null) {
-            return reviewDao.add(review);
+        if (dbReview.isPresent()){
+            throw new MethodNotAllowedException("Review id:" + dbReview.get().getId() + " already exists");
         }
 
-        return dbReview;
+        return reviewDao.create(review);
     }
 
     @Override
     @Transactional
-    public Review update(Review review) {
-        Review dbReview = reviewDao.findById(review.getId(), review.getMovie().getId());
+    public Review update(Review review) throws NotFoundException {
+        Optional<Review> dbReview = reviewDao.findById(review.getId(), review.getMovie().getId());
+        dbReview.orElseThrow(() -> new NotFoundException("Review id:" + review.getId() + " not found"));
 
-        if (dbReview != null) {
-            return reviewDao.update(review);
-        }
-
-        return dbReview;
+        return reviewDao.update(review);
     }
 
     @Override
     @Transactional
-    public void delete(Review review) {
-        reviewDao.delete(review);
+    public void delete(Integer id) {
+        reviewDao.delete(id);
     }
 }

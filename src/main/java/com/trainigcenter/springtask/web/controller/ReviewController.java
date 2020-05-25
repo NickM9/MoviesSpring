@@ -1,23 +1,17 @@
 package com.trainigcenter.springtask.web.controller;
 
-import com.trainigcenter.springtask.domain.Movie;
 import com.trainigcenter.springtask.domain.Review;
+import com.trainigcenter.springtask.domain.util.Pagination;
 import com.trainigcenter.springtask.service.MovieService;
 import com.trainigcenter.springtask.service.ReviewService;
-import com.trainigcenter.springtask.web.dto.Error;
 import com.trainigcenter.springtask.web.dto.ReviewDto;
-import com.trainigcenter.springtask.web.exception.ForbiddenException;
 import com.trainigcenter.springtask.web.exception.NotFoundException;
-import com.trainigcenter.springtask.web.exception.WebException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -51,27 +44,31 @@ public class ReviewController {
     }
 
     @GetMapping
-    public List<ReviewDto> getAll(@RequestParam(value = "page", defaultValue = "1") int page,
+    public Pagination<ReviewDto> getAll(@RequestParam(value = "page", defaultValue = "1") int page,
                                   @RequestParam(value = "size", defaultValue = "2") int size,
                                   @PathVariable("movieId") int movieId) {
-        Optional.ofNullable(movieService.getById(movieId))
-                .orElseThrow(() -> new NotFoundException("Movie id:" + movieId + " not found"));
 
-        List<Review> allReviews = reviewService.getAll(movieId, page, size);
-        return allReviews.stream()
-                         .map(this::convertToDto)
-                         .collect(Collectors.toList());
+        if (page < 1 || size < 1) {
+            throw new NotFoundException("Page and size can't be less than 1");
+        }
+
+        movieService.getById(movieId).orElseThrow(() -> new NotFoundException("Movie id:" + movieId + " not found"));
+
+        Pagination<Review> allReviews = reviewService.getAll(movieId, page, size).get();
+
+        if (page > allReviews.getMaxPage()){
+            throw new NotFoundException("Page " + page + " not found");
+        }
+
+        return convertToPaginationDto(allReviews);
     }
 
     @GetMapping("/{id}")
     public ReviewDto getReviewById(@PathVariable("movieId") int movieId,
                                    @PathVariable("id") Integer id) {
 
-        Optional.ofNullable(movieService.getById(movieId))
-                .orElseThrow(() -> new NotFoundException("Movie id:" + movieId + " not found"));
-
-        Review review = Optional.ofNullable(reviewService.getById(id, movieId))
-                                .orElseThrow(() -> new NotFoundException("Review id:" + id + " not found"));
+        movieService.getById(movieId).orElseThrow(() -> new NotFoundException("Movie id:" + movieId + " not found"));
+        Review review = reviewService.getById(id, movieId).orElseThrow(() -> new NotFoundException("Review id:" + id + " not found"));
 
         return convertToDto(review);
     }
@@ -81,11 +78,9 @@ public class ReviewController {
     public ReviewDto saveReview(@PathVariable("movieId") int movieId,
                                 @Valid @RequestBody ReviewDto reviewDto) {
 
-        Optional.ofNullable(movieService.getById(movieId))
-                .orElseThrow(() -> new NotFoundException("Movie id:" + movieId + " not found"));
-
+        movieService.getById(movieId).orElseThrow(() -> new NotFoundException("Movie id:" + movieId + " not found"));
         reviewDto.setId(null);
-        Review review = reviewService.add(convertFromDto(reviewDto));
+        Review review = reviewService.create(convertFromDto(reviewDto));
 
         return convertToDto(review);
     }
@@ -95,41 +90,22 @@ public class ReviewController {
                                   @PathVariable("id") Integer id,
                                   @Valid @RequestBody ReviewDto reviewDto) {
 
-        Optional.ofNullable(movieService.getById(movieId))
-                .orElseThrow(() -> new NotFoundException("Movie id:" + movieId + " not found"));
+        movieService.getById(movieId).orElseThrow(() -> new NotFoundException("Movie id:" + movieId + " not found"));
 
         Review review = convertFromDto(reviewDto);
         review.setId(id);
 
-        review = Optional.ofNullable(reviewService.update(review))
-                         .orElseThrow(() -> new NotFoundException("Review id:" + id + " not found"));
-
-        return convertToDto(review);
+        return convertToDto(reviewService.update(review));
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReview(@PathVariable("movieId") int movieId,
                              @PathVariable("id") Integer id) {
 
-        Optional.ofNullable(movieService.getById(movieId))
-                .orElseThrow(() -> new NotFoundException("Movie id:" + movieId + " not found"));
-
-        Review review = Optional.ofNullable(reviewService.getById(id, movieId))
-                                .orElseThrow(() -> new NotFoundException("Review id:" + id + " not found"));
-
-        reviewService.delete(review);
-    }
-
-    @ExceptionHandler({NotFoundException.class, ForbiddenException.class})
-    private ResponseEntity<Error> exceptionHandler(WebException e) {
-        Error error = new Error(e.getStatus().value(), e.getMessage());
-        return new ResponseEntity<>(error, e.getStatus());
-    }
-
-    @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class, MethodArgumentNotValidException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    private Error notValidArgumentHandler(Exception e) {
-        return new Error(HttpStatus.BAD_REQUEST.value(), "You need to initialize all fields");
+        movieService.getById(movieId).orElseThrow(() -> new NotFoundException("Movie id:" + movieId + " not found"));
+        Review review = reviewService.getById(id, movieId).orElseThrow(() -> new NotFoundException("Review id:" + id + " not found"));
+        reviewService.delete(review.getId());
     }
 
     private ReviewDto convertToDto(Review review) {
@@ -138,6 +114,15 @@ public class ReviewController {
 
     private Review convertFromDto(ReviewDto reviewDto) {
         return modelMapper.map(reviewDto, Review.class);
+    }
+
+    private Pagination<ReviewDto> convertToPaginationDto(Pagination<Review> pagination) {
+        List<ReviewDto> reviews = pagination.getObjects()
+                                           .stream()
+                                           .map(this::convertToDto)
+                                           .collect(Collectors.toList());
+
+        return new Pagination<>(pagination.getMaxPage(), reviews);
     }
 
 }

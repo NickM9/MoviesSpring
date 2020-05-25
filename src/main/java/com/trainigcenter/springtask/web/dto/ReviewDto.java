@@ -14,9 +14,6 @@ public class ReviewDto {
 
     private Integer id;
 
-    @NotNull
-    private MovieDto movie;
-
     @NotBlank
     private String authorName;
 

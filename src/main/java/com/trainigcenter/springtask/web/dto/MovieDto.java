@@ -2,12 +2,14 @@ package com.trainigcenter.springtask.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+import com.trainigcenter.springtask.domain.Review;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.Duration;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -27,9 +29,9 @@ public class MovieDto {
     private Duration duration;
 
     @NotNull
-    private Set<GenreDto> genres;
+    private List<GenreDto> genres;
 
     @NotNull
-    private Set<ActorDto> actors;
+    private List<ActorDto> actors;
 
 }

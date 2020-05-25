@@ -14,7 +14,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ActorDaoImpl implements ActorDao {
@@ -22,26 +24,26 @@ public class ActorDaoImpl implements ActorDao {
     private static final Logger logger = LogManager.getLogger(ActorDaoImpl.class);
 
     @PersistenceContext
-    EntityManager entityManager;
+    private EntityManager entityManager;
 
     @Override
-    public Actor findById(Integer id) {
-        return entityManager.find(Actor.class, id);
+    public Optional<Actor> findById(Integer id) {
+        return Optional.ofNullable(entityManager.find(Actor.class, id));
     }
 
     @Override
-    public List<Actor> findAll() {
+    public Optional<List<Actor>> findAll() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Actor> query = criteriaBuilder.createQuery(Actor.class);
 
         Root<Actor> actorsRoot = query.from(Actor.class);
         query.select(actorsRoot);
 
-        return entityManager.createQuery(query).getResultList();
+        return Optional.ofNullable(entityManager.createQuery(query).getResultList());
     }
 
     @Override
-    public Actor findByName(String name) {
+    public Optional<Actor> findByName(String name) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Actor> criteriaQuery = criteriaBuilder.createQuery(Actor.class);
 
@@ -56,14 +58,13 @@ public class ActorDaoImpl implements ActorDao {
             actor = typed.getSingleResult();
         } catch (NoResultException e) {
             logger.debug(e);
-            actor = null;
         }
 
-        return actor;
+        return Optional.ofNullable(actor);
     }
 
     @Override
-    public Actor findByIdWithMovies(Integer id) {
+    public Optional<Actor> findByIdWithMovies(Integer id) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Actor> criteriaQuery = criteriaBuilder.createQuery(Actor.class);
 
@@ -80,27 +81,27 @@ public class ActorDaoImpl implements ActorDao {
             actor = typed.getSingleResult();
         } catch (NoResultException e) {
             logger.debug(e);
-            actor = null;
         }
 
-        return actor;
+        return Optional.ofNullable(actor);
     }
 
     @Override
-    public Actor add(Actor actor) {
+    public Actor create(Actor actor) {
         entityManager.persist(actor);
         return actor;
     }
-
 
     @Override
     public Actor update(Actor actor) {
         return entityManager.merge(actor);
     }
 
-
     @Override
-    public void delete(Actor actor) {
+    @Transactional
+    public void delete(Integer id) {
+        Actor actor = entityManager.find(Actor.class, id);
+
         entityManager.remove(entityManager.contains(actor) ? actor : entityManager.merge(actor));
     }
 

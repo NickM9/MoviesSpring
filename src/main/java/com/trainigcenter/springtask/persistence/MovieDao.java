@@ -1,24 +1,24 @@
 package com.trainigcenter.springtask.persistence;
 
 import com.trainigcenter.springtask.domain.Movie;
+import com.trainigcenter.springtask.domain.util.Pagination;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MovieDao {
 
-    Movie findById(Integer id);
+    Optional<Movie> findById(Integer id);
 
-    List<Movie> findMoviesByName(String name);
+    Optional<List<Movie>> findMoviesByName(String name);
 
-    List<Movie> findAll(int page, int size);
+    Optional<Pagination<Movie>> findAll(int page, int size);
 
-    Movie add(Movie movie);
+    Movie create(Movie movie);
 
     Movie update(Movie movie);
 
-    void delete(Movie movie);
+    void delete(Integer id);
 
-    List<Movie> findAllByGenre(String genre, int page, int size);
-
-    List<Movie> findByRating(int rating, int page, int size);
+    Optional<Pagination<Movie>> findAllByGenre(Integer genreId, int page, int size);
 }

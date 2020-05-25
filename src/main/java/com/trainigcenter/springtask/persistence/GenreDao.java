@@ -4,21 +4,21 @@ import com.trainigcenter.springtask.domain.Genre;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
-@Repository
 public interface GenreDao {
 
-    Genre findById(Integer id);
+    Optional<Genre> findById(Integer id);
 
-    Genre findByName(String name);
+    Optional<Genre> findByName(String name);
 
-    List<Genre> findAll();
+    Optional<List<Genre>> findAll();
 
-    Genre add(Genre genre);
+    Genre create(Genre genre);
 
     Genre update(Genre genre);
 
-    void delete(Genre genre);
+    void delete(Integer id);
 
-    Genre findByIdWithMovies(Integer id);
+    Optional<Genre> findByIdWithMovies(Integer id);
 }

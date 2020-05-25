@@ -1,8 +1,6 @@
 package com.trainigcenter.springtask.web.exception;
 
 import com.trainigcenter.springtask.web.dto.Error;
-import com.trainigcenter.springtask.web.exception.MethodNotAllowedException;
-import com.trainigcenter.springtask.web.exception.NotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

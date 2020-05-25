@@ -1,20 +1,22 @@
 package com.trainigcenter.springtask.persistence;
 
 import com.trainigcenter.springtask.domain.Review;
+import com.trainigcenter.springtask.domain.util.Pagination;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReviewDao {
 
-    Review findById(Integer id, Integer movieId);
+    Optional<Review> findById(Integer id, Integer movieId);
 
-    List<Review> findAll(Integer movieId, int page, int size);
+    Optional<Pagination<Review>> findAll(Integer movieId, int page, int size);
 
-    Review add(Review review);
+    Review create(Review review);
 
-    Review findByMovieIdAndAuthorName(Integer movieId, String authorName);
+    Optional<Review> findByMovieIdAndAuthorName(Integer movieId, String authorName);
 
     Review update(Review review);
 
-    void delete(Review review);
+    void delete(Integer id);
 }

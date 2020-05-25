@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -34,18 +35,13 @@ public class Genre {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Genre genre = (Genre) o;
-
-        if (id != null ? !id.equals(genre.id) : genre.id != null) return false;
-        return name != null ? name.equals(genre.name) : genre.name == null;
+        return Objects.equals(id, genre.id) &&
+                Objects.equals(name, genre.name);
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        return result;
+        return Objects.hash(id, name);
     }
-
 }
