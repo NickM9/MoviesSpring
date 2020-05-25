@@ -32,24 +32,29 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
-    public Optional<List<Genre>> getAll() {
+    public List<Genre> getAll() {
         return genreDao.findAll();
     }
 
     @Override
     @Transactional
-    public Genre add(Genre genre) {
+    public Genre create(Genre genre) {
         Optional<Genre> dbGenre = genreDao.findByName(genre.getName());
 
-        return dbGenre.orElseGet(() -> genreDao.create(genre));
+        if (dbGenre.isPresent()) {
+            throw new MethodNotAllowedException("Genre name:" + genre.getName() + " already exists with id: " + dbGenre.get().getId());
+        }
+
+        return genreDao.create(genre);
     }
 
     @Override
     @Transactional
-    public Genre update(Genre genre) throws NotFoundException {
+    public Genre update(Genre genre) {
         Optional<Genre> dbGenre = genreDao.findById(genre.getId());
+        dbGenre.orElseThrow(() -> new NotFoundException("Genre id:" + genre.getId() + " not found"));
 
-        return dbGenre.orElseThrow(() -> new NotFoundException("Genre id:" + genre.getId() + " not found"));
+        return genreDao.update(genre);
     }
 
     @Override

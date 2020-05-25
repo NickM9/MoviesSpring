@@ -9,11 +9,11 @@ public interface ActorService {
 
     Optional<Actor> getById(Integer id);
 
-    Optional<List<Actor>> getAll();
+    List<Actor> getAll();
 
     Optional<Actor> getByName(String name);
 
-    Actor add(Actor actor);
+    Actor create(Actor actor);
 
     Actor update(Actor actor);
 

@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -42,7 +41,7 @@ public class ReviewServiceImpl implements ReviewService {
     public Review create(Review review) {
         Optional<Review> dbReview = reviewDao.findByMovieIdAndAuthorName(review.getMovie().getId(), review.getAuthorName());
 
-        if (dbReview.isPresent()){
+        if (dbReview.isPresent()) {
             throw new MethodNotAllowedException("Review id:" + dbReview.get().getId() + " already exists");
         }
 
@@ -51,7 +50,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
-    public Review update(Review review) throws NotFoundException {
+    public Review update(Review review) {
         Optional<Review> dbReview = reviewDao.findById(review.getId(), review.getMovie().getId());
         dbReview.orElseThrow(() -> new NotFoundException("Review id:" + review.getId() + " not found"));
 

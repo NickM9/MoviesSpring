@@ -1,5 +1,6 @@
 package com.trainigcenter.springtask.persistence.impl;
 
+import com.trainigcenter.springtask.domain.Actor;
 import com.trainigcenter.springtask.domain.Genre;
 import com.trainigcenter.springtask.persistence.GenreDao;
 import org.apache.logging.log4j.LogManager;
@@ -77,14 +78,14 @@ public class GenreDaoImpl implements GenreDao {
     }
 
     @Override
-    public Optional<List<Genre>> findAll() {
+    public List<Genre> findAll() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Genre> query = criteriaBuilder.createQuery(Genre.class);
 
         Root<Genre> genresRoot = query.from(Genre.class);
         query.select(genresRoot);
 
-        return Optional.ofNullable(entityManager.createQuery(query).getResultList());
+        return List.of(entityManager.createQuery(query).getResultList().toArray(Genre[]::new));
     }
 
     @Override
@@ -99,7 +100,6 @@ public class GenreDaoImpl implements GenreDao {
     }
 
     @Override
-    @Transactional
     public void delete(Integer id) {
         Genre genre = entityManager.find(Genre.class, id);
 

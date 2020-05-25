@@ -12,7 +12,7 @@ public interface GenreDao {
 
     Optional<Genre> findByName(String name);
 
-    Optional<List<Genre>> findAll();
+    List<Genre> findAll();
 
     Genre create(Genre genre);
 

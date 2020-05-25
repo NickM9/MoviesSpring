@@ -10,9 +10,9 @@ public interface MovieDao {
 
     Optional<Movie> findById(Integer id);
 
-    Optional<List<Movie>> findMoviesByName(String name);
+    List<Movie> findMoviesByName(String name);
 
-    Optional<Pagination<Movie>> findAll(int page, int size);
+    Pagination<Movie> findAll(int page, int size);
 
     Movie create(Movie movie);
 
@@ -20,5 +20,5 @@ public interface MovieDao {
 
     void delete(Integer id);
 
-    Optional<Pagination<Movie>> findAllByGenre(Integer genreId, int page, int size);
+    Pagination<Movie> findAllByGenre(Integer genreId, int page, int size);
 }

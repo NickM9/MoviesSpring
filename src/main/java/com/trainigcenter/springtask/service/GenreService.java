@@ -10,9 +10,9 @@ public interface GenreService {
 
     Optional<Genre> getById(Integer id);
 
-    Optional<List<Genre>> getAll();
+    List<Genre> getAll();
 
-    Genre add(Genre genre);
+    Genre create(Genre genre);
 
     Genre update(Genre genre);
 

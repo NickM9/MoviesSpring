@@ -32,7 +32,7 @@ public class ActorServiceImpl implements ActorService {
     }
 
     @Override
-    public Optional<List<Actor>> getAll() {
+    public List<Actor> getAll() {
         return actorDao.findAll();
     }
 
@@ -43,19 +43,23 @@ public class ActorServiceImpl implements ActorService {
 
     @Override
     @Transactional
-    public Actor add(Actor actor) {
+    public Actor create(Actor actor) {
         Optional<Actor> dbActor = actorDao.findByName(actor.getName());
 
-        return dbActor.orElseGet(() -> actorDao.create(actor));
+        if (dbActor.isPresent()) {
+            throw new MethodNotAllowedException("Actor name:" + actor.getName() + " already exists with id: " + dbActor.get().getId());
+        }
 
+        return actorDao.create(actor);
     }
 
     @Override
     @Transactional
-    public Actor update(Actor actor) throws NotFoundException {
+    public Actor update(Actor actor) {
         Optional<Actor> dbActor = actorDao.findById(actor.getId());
+        dbActor.orElseThrow(() -> new NotFoundException("Actor id:" + actor.getId() + " not found"));
 
-        return dbActor.orElseThrow(() -> new NotFoundException("Actor id:" + actor.getId() + " not found"));
+        return actorDao.update(actor);
     }
 
     @Override

@@ -41,16 +41,17 @@ public class MovieController {
     }
 
     @GetMapping
-    public Pagination<MovieDto> getAll(@RequestParam(value = "page", defaultValue = "1") int page,
-                                       @RequestParam(value = "size", defaultValue = "2") int size) {
+    public Pagination<MovieDto> getAll(@RequestParam(value = "page", required = false, defaultValue = "1") int page,
+                                       @RequestParam(value = "size", required = false, defaultValue = "2") int size) {
 
+        System.out.println("get all");
         if (page < 1 || size < 1) {
             throw new NotFoundException("Page and size can't be less than 1");
         }
 
-        Pagination<Movie> moviePagination = movieService.getAll(page, size).get();
+        Pagination<Movie> moviePagination = movieService.getAll(page, size);
 
-        if (page > moviePagination.getMaxPage()){
+        if (page > moviePagination.getMaxPage()) {
             throw new NotFoundException("Page " + page + " not found");
         }
 
@@ -58,18 +59,21 @@ public class MovieController {
     }
 
 
-    @GetMapping("/filter")
-    public Pagination<MovieDto> getAllFilterByGenre(@RequestParam(value = "page", defaultValue = "1") int page,
-                                              @RequestParam(value = "size", defaultValue = "2") int size,
-                                              @RequestParam(value = "genre", required = true) int genreId) {
+    @GetMapping(params = "genreId")
+    public Pagination<MovieDto> getAllFilterByGenre(@RequestParam(value = "genre") int genreId,
+                                                    @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+                                                    @RequestParam(value = "size", required = false, defaultValue = "2") int size
+                                                    ) {
+
+        System.out.println("Get filter");
 
         if (page < 1 || size < 1) {
             throw new NotFoundException("Page and size can't be less than 1");
         }
 
-        Pagination<Movie> moviePagination = movieService.getAllByGenre(genreId, page, size).get();
+        Pagination<Movie> moviePagination = movieService.getAllByGenre(genreId, page, size);
 
-        if (page > moviePagination.getMaxPage()){
+        if (page > moviePagination.getMaxPage()) {
             throw new NotFoundException("Page " + page + " not found");
         }
 
@@ -118,11 +122,11 @@ public class MovieController {
         return modelMapper.map(movieDto, Movie.class);
     }
 
-    private Pagination<MovieDto> convertToPaginationDto(Pagination<Movie> pagination){
+    private Pagination<MovieDto> convertToPaginationDto(Pagination<Movie> pagination) {
         List<MovieDto> movies = pagination.getObjects()
-                                               .stream()
-                                               .map(this::convertToDto)
-                                               .collect(Collectors.toList());
+                                          .stream()
+                                          .map(this::convertToDto)
+                                          .collect(Collectors.toList());
 
         return new Pagination<>(pagination.getMaxPage(), movies);
     }

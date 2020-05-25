@@ -96,7 +96,7 @@ public class ReviewDaoImpl implements ReviewDao {
         countQuery.where(criteriaBuilder.equal(reviewRoot.get("movie").get("id"), movieId));
 
         Long count = entityManager.createQuery(countQuery).getSingleResult();
-        int lastPageNumber = (int) Math.ceil(count / size);
+        int lastPageNumber =  (int) (Math.ceil(((double) count) / ((double) size)));
 
         Pagination<Review> pagination = new Pagination(lastPageNumber, reviews);
 
@@ -115,7 +115,6 @@ public class ReviewDaoImpl implements ReviewDao {
     }
 
     @Override
-    @Transactional
     public void delete(Integer id) {
         Review review = entityManager.find(Review.class, id);
 

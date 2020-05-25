@@ -40,7 +40,7 @@ public class ActorController {
 
     @GetMapping
     public List<ActorDto> getAll() {
-        List<Actor> allActors = actorService.getAll().get();
+        List<Actor> allActors = actorService.getAll();
         return allActors.stream()
                         .map(this::convertToDto)
                         .collect(Collectors.toList());

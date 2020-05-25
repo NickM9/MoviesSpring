@@ -33,7 +33,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public Optional<Pagination<Movie>> getAll(int page, int size) {
+    public Pagination<Movie> getAll(int page, int size) {
         return movieDao.findAll(page, size);
     }
 
@@ -41,7 +41,7 @@ public class MovieServiceImpl implements MovieService {
     @Transactional
     public Movie create(Movie movie) {
 
-        List<Movie> movies = movieDao.findMoviesByName(movie.getTitle()).get();
+        List<Movie> movies = movieDao.findMoviesByName(movie.getTitle());
 
         for (Movie m : movies) {
             if (movie.equals(m)) {
@@ -54,7 +54,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     @Transactional
-    public Movie update(Movie movie) throws NotFoundException {
+    public Movie update(Movie movie) {
         Optional<Movie> dbMovie = movieDao.findById(movie.getId());
         dbMovie.orElseThrow(() -> new NotFoundException("Movie id:" + movie.getId() + " not found"));
 
@@ -68,7 +68,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public Optional<Pagination<Movie>> getAllByGenre(Integer genreId, int page, int size) {
+    public Pagination<Movie> getAllByGenre(Integer genreId, int page, int size) {
         return movieDao.findAllByGenre(genreId, page, size);
     }
 

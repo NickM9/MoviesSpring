@@ -32,14 +32,14 @@ public class ActorDaoImpl implements ActorDao {
     }
 
     @Override
-    public Optional<List<Actor>> findAll() {
+    public List<Actor> findAll() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Actor> query = criteriaBuilder.createQuery(Actor.class);
 
         Root<Actor> actorsRoot = query.from(Actor.class);
         query.select(actorsRoot);
 
-        return Optional.ofNullable(entityManager.createQuery(query).getResultList());
+        return List.of(entityManager.createQuery(query).getResultList().toArray(Actor[]::new));
     }
 
     @Override
@@ -98,7 +98,6 @@ public class ActorDaoImpl implements ActorDao {
     }
 
     @Override
-    @Transactional
     public void delete(Integer id) {
         Actor actor = entityManager.find(Actor.class, id);
 

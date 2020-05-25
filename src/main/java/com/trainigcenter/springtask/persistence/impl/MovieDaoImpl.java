@@ -1,5 +1,6 @@
 package com.trainigcenter.springtask.persistence.impl;
 
+import com.trainigcenter.springtask.domain.Actor;
 import com.trainigcenter.springtask.domain.Genre;
 import com.trainigcenter.springtask.domain.Movie;
 import com.trainigcenter.springtask.domain.util.Pagination;
@@ -32,7 +33,7 @@ public class MovieDaoImpl implements MovieDao {
     }
 
     @Override
-    public Optional<List<Movie>> findMoviesByName(String title) {
+    public List<Movie> findMoviesByName(String title) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Movie> criteriaQuery = criteriaBuilder.createQuery(Movie.class);
         Root<Movie> root = criteriaQuery.from(Movie.class);
@@ -41,10 +42,12 @@ public class MovieDaoImpl implements MovieDao {
         criteriaQuery.where(criteriaBuilder.equal(root.get("title"), title));
 
         TypedQuery<Movie> typed = entityManager.createQuery(criteriaQuery);
-        return Optional.ofNullable(typed.getResultList());
+
+        return List.of(typed.getResultList().toArray(Movie[]::new));
     }
 
-    public Optional<Pagination<Movie>> findAllByGenre(Integer genreId, int page, int size) {
+    @Override
+    public Pagination<Movie> findAllByGenre(Integer genreId, int page, int size) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Movie> criteriaQuery = criteriaBuilder.createQuery(Movie.class);
 
@@ -59,7 +62,7 @@ public class MovieDaoImpl implements MovieDao {
         query.setMaxResults(size);
         query.setFirstResult((page - 1) * size);
 
-        List<Movie> movies = query.getResultList();
+        List<Movie> movies = List.of(query.getResultList().toArray(Movie[]::new));
 
         CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
         Root<Movie> root = countQuery.from(Movie.class);
@@ -67,21 +70,20 @@ public class MovieDaoImpl implements MovieDao {
         countQuery.select(criteriaBuilder.count(root));
         countQuery.distinct(true).where(criteriaBuilder.equal(genres.get("id"), genreId));
         Long count = entityManager.createQuery(countQuery).getSingleResult();
-        int lastPageNumber = (int) Math.ceil(count/size);
+        int lastPageNumber =  (int) (Math.ceil(((double) count) / ((double) size)));
 
-        Pagination<Movie> pagination = new Pagination(lastPageNumber, movies);
-
-        return Optional.ofNullable(pagination);
+        return new Pagination(lastPageNumber, movies);
     }
 
     @Override
-    public Optional<Pagination<Movie>> findAll(int page, int size) {
+    public Pagination<Movie> findAll(int page, int size) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 
         CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
         countQuery.select(criteriaBuilder.count(countQuery.from(Movie.class)));
+
         Long count = entityManager.createQuery(countQuery).getSingleResult();
-        int lastPageNumber = (int) Math.ceil(count/size);
+        int lastPageNumber =  (int) (Math.ceil(((double) count) / ((double) size)));
 
         CriteriaQuery<Movie> criteriaQuery = criteriaBuilder.createQuery(Movie.class);
         Root<Movie> root = criteriaQuery.from(Movie.class);
@@ -92,11 +94,10 @@ public class MovieDaoImpl implements MovieDao {
         TypedQuery<Movie> query = entityManager.createQuery(criteriaQuery);
         query.setMaxResults(size);
         query.setFirstResult((page - 1) * size);
-        List<Movie> movies = query.getResultList();
 
-        Pagination<Movie> pagination = new Pagination(lastPageNumber, movies);
+        List<Movie> movies = List.of(query.getResultList().toArray(Movie[]::new));
 
-        return Optional.ofNullable(pagination);
+        return new Pagination(lastPageNumber, movies);
     }
 
     @Override
@@ -111,7 +112,6 @@ public class MovieDaoImpl implements MovieDao {
     }
 
     @Override
-    @Transactional
     public void delete(Integer id) {
         Movie movie = entityManager.find(Movie.class, id);
 

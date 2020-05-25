@@ -9,7 +9,7 @@ public interface ActorDao {
 
     Optional<Actor> findById(Integer id);
 
-    Optional<List<Actor>> findAll();
+    List<Actor> findAll();
 
     Optional<Actor> findByName(String name);
 

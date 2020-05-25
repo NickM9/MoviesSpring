@@ -40,7 +40,7 @@ public class GenreController {
 
     @GetMapping
     public List<GenreDto> getAll() {
-        List<Genre> allGenres = genreService.getAll().get();
+        List<Genre> allGenres = genreService.getAll();
         return allGenres.stream()
                         .map(this::convertToDto)
                         .collect(Collectors.toList());
