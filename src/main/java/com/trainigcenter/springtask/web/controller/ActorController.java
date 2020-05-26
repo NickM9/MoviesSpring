@@ -56,20 +56,16 @@ public class ActorController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ActorDto saveActor(@Valid @RequestBody ActorDto actorDto) {
-        actorDto.setId(null);
-
         Actor actor = actorService.create(convertFromDto(actorDto));
         return convertToDto(actor);
     }
 
     @PutMapping("/{id}")
-    public ActorDto updateActor(@PathVariable("id") Integer id,
+    public ActorDto updateActor(@PathVariable("id") int id,
                                 @Valid @RequestBody ActorDto actorDto) {
 
         Actor actor = convertFromDto(actorDto);
-        actor.setId(id);
-
-        return convertToDto(actorService.update(actor));
+        return convertToDto(actorService.update(actor, id));
     }
 
     @DeleteMapping("/{id}")

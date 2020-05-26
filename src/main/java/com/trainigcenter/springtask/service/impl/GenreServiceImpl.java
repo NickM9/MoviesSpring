@@ -39,6 +39,9 @@ public class GenreServiceImpl implements GenreService {
     @Override
     @Transactional
     public Genre create(Genre genre) {
+        genre.setId(null);
+        genre.setName(mapGenreName(genre.getName()));
+
         Optional<Genre> dbGenre = genreDao.findByName(genre.getName());
 
         if (dbGenre.isPresent()) {
@@ -50,7 +53,10 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     @Transactional
-    public Genre update(Genre genre) {
+    public Genre update(Genre genre, int id) {
+        genre.setId(id);
+        genre.setName(mapGenreName(genre.getName()));
+
         Optional<Genre> dbGenre = genreDao.findById(genre.getId());
         dbGenre.orElseThrow(() -> new NotFoundException("Genre id:" + genre.getId() + " not found"));
 
@@ -74,4 +80,9 @@ public class GenreServiceImpl implements GenreService {
         return genreDao.findByIdWithMovies(id);
     }
 
+    private String mapGenreName(String genreName) {
+        genreName = genreName.toLowerCase();
+        genreName = genreName.replaceAll("-", " ");
+        return genreName;
+    }
 }

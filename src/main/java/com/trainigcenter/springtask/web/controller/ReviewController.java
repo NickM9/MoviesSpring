@@ -79,26 +79,20 @@ public class ReviewController {
                                 @Valid @RequestBody ReviewDto reviewDto) {
 
         movieService.getById(movieId).orElseThrow(() -> new NotFoundException("Movie id:" + movieId + " not found"));
-        reviewDto.setId(null);
         Review review = convertFromDto(reviewDto);
-        review.setMovie(movieService.getById(movieId).get());
-        review = reviewService.create(review);
 
-        return convertToDto(review);
+        return convertToDto(reviewService.create(review, movieId));
     }
 
     @PutMapping("/{id}")
     public ReviewDto updateReview(@PathVariable("movieId") int movieId,
-                                  @PathVariable("id") Integer id,
+                                  @PathVariable("id") int id,
                                   @Valid @RequestBody ReviewDto reviewDto) {
 
         movieService.getById(movieId).orElseThrow(() -> new NotFoundException("Movie id:" + movieId + " not found"));
-
         Review review = convertFromDto(reviewDto);
-        review.setId(id);
-        review.setMovie(movieService.getById(movieId).get());
 
-        return convertToDto(reviewService.update(review));
+        return convertToDto(reviewService.update(review, id, movieId));
     }
 
     @DeleteMapping("/{id}")

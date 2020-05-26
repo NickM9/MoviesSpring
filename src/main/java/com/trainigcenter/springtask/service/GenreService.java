@@ -14,7 +14,7 @@ public interface GenreService {
 
     Genre create(Genre genre);
 
-    Genre update(Genre genre);
+    Genre update(Genre genre, int id);
 
     void delete(Integer id);
 

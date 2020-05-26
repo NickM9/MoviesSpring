@@ -15,7 +15,7 @@ public interface ActorService {
 
     Actor create(Actor actor);
 
-    Actor update(Actor actor);
+    Actor update(Actor actor, int id);
 
     void delete(Integer id);
 

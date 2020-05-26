@@ -40,6 +40,7 @@ public class MovieServiceImpl implements MovieService {
     @Override
     @Transactional
     public Movie create(Movie movie) {
+        movie.setId(null);
 
         List<Movie> movies = movieDao.findMoviesByName(movie.getTitle());
 
@@ -54,7 +55,8 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     @Transactional
-    public Movie update(Movie movie) {
+    public Movie update(Movie movie, int id) {
+        movie.setId(id);
         Optional<Movie> dbMovie = movieDao.findById(movie.getId());
         dbMovie.orElseThrow(() -> new NotFoundException("Movie id:" + movie.getId() + " not found"));
 

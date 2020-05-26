@@ -11,22 +11,19 @@ repositories {
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-
     // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
-    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.3'
+    implementation 'org.apache.logging.log4j:log4j-api:2.13.3'
 
     // https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api
     compile group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
 
 
     // https://mvnrepository.com/artifact/org.hibernate/hibernate-core
-    compile group: 'org.hibernate', name: 'hibernate-core', version: '5.4.15.Final'
-    compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: '5.4.15.Final'
-    compile group: 'org.hibernate', name: 'hibernate-validator', version: '6.1.5.Final'
+    implementation 'org.hibernate:hibernate-core:5.4.15.Final'
+    implementation 'org.hibernate:hibernate-entitymanager:5.4.15.Final'
+    implementation 'org.hibernate:hibernate-validator:6.1.5.Final'
 
-    //compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: '5.4.15.Final'
-    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.12'
+    implementation 'org.postgresql:postgresql:42.2.12'
 
     compile group: 'org.springframework', name: 'spring-context', version: '5.2.6.RELEASE'
     compile group: 'org.springframework', name: 'spring-core', version: '5.2.6.RELEASE'
@@ -39,8 +36,8 @@ dependencies {
     compile group: 'org.springframework.data', name: 'spring-data-jpa', version: '2.3.0.RELEASE'
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.0'
-    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.11.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.0'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.0'
 
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
     compileOnly 'org.projectlombok:lombok:1.18.12'
@@ -50,5 +47,5 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
 
     // https://mvnrepository.com/artifact/org.modelmapper/modelmapper
-    compile group: 'org.modelmapper', name: 'modelmapper', version: '2.3.7'
+    implementation 'org.modelmapper:modelmapper:2.3.7'
 }

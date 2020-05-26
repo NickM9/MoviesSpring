@@ -3,6 +3,7 @@ package com.trainigcenter.springtask.service.impl;
 import com.trainigcenter.springtask.domain.Review;
 import com.trainigcenter.springtask.domain.util.Pagination;
 import com.trainigcenter.springtask.persistence.ReviewDao;
+import com.trainigcenter.springtask.service.MovieService;
 import com.trainigcenter.springtask.service.ReviewService;
 import com.trainigcenter.springtask.web.exception.MethodNotAllowedException;
 import com.trainigcenter.springtask.web.exception.NotFoundException;
@@ -20,10 +21,12 @@ public class ReviewServiceImpl implements ReviewService {
     private static final Logger logger = LogManager.getLogger(ReviewServiceImpl.class);
 
     private final ReviewDao reviewDao;
+    private final MovieService movieService;
 
     @Autowired
-    public ReviewServiceImpl(ReviewDao reviewDao) {
+    public ReviewServiceImpl(ReviewDao reviewDao, MovieService movieService) {
         this.reviewDao = reviewDao;
+        this.movieService = movieService;
     }
 
     @Override
@@ -38,7 +41,11 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
-    public Review create(Review review) {
+    public Review create(Review review, int movieId) {
+
+        review.setId(null);
+        review.setMovie(movieService.getById(movieId).get());
+
         Optional<Review> dbReview = reviewDao.findByMovieIdAndAuthorName(review.getMovie().getId(), review.getAuthorName());
 
         if (dbReview.isPresent()) {
@@ -50,9 +57,12 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
-    public Review update(Review review) {
+    public Review update(Review review, int id, int movieId) {
+
+        review.setId(id);
+        review.setMovie(movieService.getById(movieId).get());
+
         Optional<Review> dbReview = reviewDao.findById(review.getId());
-        System.out.println(ReviewServiceImpl.class + " : " + dbReview);
         dbReview.orElseThrow(() -> new NotFoundException("Review id:" + review.getId() + " not found"));
 
         return reviewDao.update(review);

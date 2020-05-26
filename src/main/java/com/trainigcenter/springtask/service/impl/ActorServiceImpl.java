@@ -38,12 +38,15 @@ public class ActorServiceImpl implements ActorService {
 
     @Override
     public Optional<Actor> getByName(String name) {
-        return actorDao.findByName(name);
+        return actorDao.findByName(mapActorName(name));
     }
 
     @Override
     @Transactional
     public Actor create(Actor actor) {
+        actor.setId(null);
+        actor.setName(mapActorName(actor.getName()));
+
         Optional<Actor> dbActor = actorDao.findByName(actor.getName());
 
         if (dbActor.isPresent()) {
@@ -55,7 +58,10 @@ public class ActorServiceImpl implements ActorService {
 
     @Override
     @Transactional
-    public Actor update(Actor actor) {
+    public Actor update(Actor actor, int id) {
+        actor.setId(id);
+        actor.setName(mapActorName(actor.getName()));
+
         Optional<Actor> dbActor = actorDao.findById(actor.getId());
         dbActor.orElseThrow(() -> new NotFoundException("Actor id:" + actor.getId() + " not found"));
 
@@ -79,4 +85,8 @@ public class ActorServiceImpl implements ActorService {
         actorDao.delete(actor.getId());
     }
 
+    private String mapActorName(String actorName){
+        actorName = actorName.toLowerCase();
+        return actorName;
+    }
 }

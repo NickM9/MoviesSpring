@@ -90,20 +90,16 @@ public class MovieController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public MovieDto saveMovie(@Valid @RequestBody MovieDto movieDto) {
-        movieDto.setId(null);
         Movie movie = movieService.create(convertFromDto(movieDto));
-
         return convertToDto(movie);
     }
 
     @PutMapping("/{id}")
-    public MovieDto updateMovie(@PathVariable("id") Integer id,
+    public MovieDto updateMovie(@PathVariable("id") int id,
                                 @Valid @RequestBody MovieDto movieDto) {
 
         Movie movie = convertFromDto(movieDto);
-        movie.setId(id);
-
-        return convertToDto(movieService.update(movie));
+        return convertToDto(movieService.update(movie, id));
     }
 
     @DeleteMapping("/{id}")

@@ -92,7 +92,6 @@ public class ReviewDaoImpl implements ReviewDao {
 
     @Override
     public Review update(Review review) {
-        System.out.println(ReviewDaoImpl.class + " : " + review);
         return entityManager.merge(review);
     }
 

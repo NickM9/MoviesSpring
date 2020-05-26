@@ -34,15 +34,4 @@ public class Review {
     private String text;
     private double rating;
 
-    @Override
-    public String toString() {
-        return "Review{" +
-                "id=" + id +
-                ", movie=" + movie +
-                ", authorName='" + authorName + '\'' +
-                ", title='" + title + '\'' +
-                ", text='" + text + '\'' +
-                ", rating=" + rating +
-                '}';
-    }
 }

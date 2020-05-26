@@ -49,36 +49,28 @@ public class GenreController {
     @GetMapping("/{id}")
     public GenreDto getGenreById(@PathVariable("id") int id) {
         Genre genre = genreService.getById(id).orElseThrow(() -> new NotFoundException("Genre id:" + id + " not found"));
-
         return convertToDto(genre);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public GenreDto saveGenre(@Valid @RequestBody GenreDto genreDto) {
-        genreDto.setId(null);
-        genreDto.setName(mapGenreName(genreDto.getName()));
-
         Genre genre = genreService.create(convertFromDto(genreDto));
         return convertToDto(genre);
     }
 
     @PutMapping("/{id}")
-    public GenreDto updateGenre(@PathVariable("id") Integer id,
+    public GenreDto updateGenre(@PathVariable("id") int id,
                                 @Valid @RequestBody GenreDto genreDto) {
 
         Genre genre = convertFromDto(genreDto);
-        genre.setId(id);
-        genre.setName(mapGenreName(genre.getName()));
-
-        return convertToDto(genreService.update(genre));
+        return convertToDto(genreService.update(genre, id));
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void  deleteGenre(@PathVariable("id") Integer id) {
         Genre genre = genreService.getByIdWithMovies(id).orElseThrow(() -> new NotFoundException("Genre id:" + id + " not found"));
-        System.out.println("Before delete");
         genreService.delete(genre.getId());
     }
 
@@ -88,12 +80,6 @@ public class GenreController {
 
     private Genre convertFromDto(GenreDto genreDto) {
         return modelMapper.map(genreDto, Genre.class);
-    }
-
-    private String mapGenreName(String genreName) {
-        genreName = genreName.toLowerCase();
-        genreName = genreName.replaceAll("-", " ");
-        return genreName;
     }
 
 }

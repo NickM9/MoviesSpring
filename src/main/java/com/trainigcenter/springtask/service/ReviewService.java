@@ -12,9 +12,9 @@ public interface ReviewService {
 
     Pagination<Review> getAll(Integer movieId, int page, int size);
 
-    Review create(Review review);
+    Review create(Review review, int movieId);
 
-    Review update(Review review);
+    Review update(Review review, int id, int movieId);
 
     void delete(Integer id);
 }
