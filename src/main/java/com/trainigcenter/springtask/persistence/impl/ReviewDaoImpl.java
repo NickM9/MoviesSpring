@@ -1,5 +1,6 @@
 package com.trainigcenter.springtask.persistence.impl;
 
+import com.trainigcenter.springtask.domain.Movie;
 import com.trainigcenter.springtask.domain.Review;
 import com.trainigcenter.springtask.domain.util.Pagination;
 import com.trainigcenter.springtask.persistence.ReviewDao;
@@ -27,28 +28,8 @@ public class ReviewDaoImpl implements ReviewDao {
     private EntityManager entityManager;
 
     @Override
-    public Optional<Review> findById(Integer id, Integer movieId) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Review> criteriaQuery = criteriaBuilder.createQuery(Review.class);
-        Root<Review> root = criteriaQuery.from(Review.class);
-
-        criteriaQuery.select(root);
-        criteriaQuery.where(
-                criteriaBuilder.equal(root.get("movie").get("id"), movieId),
-                criteriaBuilder.equal(root.get("id"), id)
-        );
-
-
-        TypedQuery<Review> typed = entityManager.createQuery(criteriaQuery);
-        Review review = null;
-
-        try {
-            review = typed.getSingleResult();
-        } catch (NoResultException e) {
-            logger.debug(e);
-        }
-
-        return Optional.ofNullable(review);
+    public Optional<Review> findById(Integer id) {
+        return Optional.ofNullable(entityManager.find(Review.class, id));
     }
 
     @Override
@@ -77,7 +58,7 @@ public class ReviewDaoImpl implements ReviewDao {
     }
 
     @Override
-    public Optional<Pagination<Review>> findAll(Integer movieId, int page, int size) {
+    public Pagination<Review> findAll(Integer movieId, int page, int size) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Review> criteriaQuery = criteriaBuilder.createQuery(Review.class);
         Root<Review> reviewRoot = criteriaQuery.from(Review.class);
@@ -89,10 +70,10 @@ public class ReviewDaoImpl implements ReviewDao {
         query.setMaxResults(size);
         query.setFirstResult((page - 1) * size);
 
-        List<Review> reviews = query.getResultList();
+        List<Review> reviews = List.of(query.getResultList().toArray(Review[]::new));
 
         CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
-        countQuery.select(criteriaBuilder.count(criteriaQuery.from(Review.class)));
+        countQuery.select(criteriaBuilder.count(countQuery.from(Review.class)));
         countQuery.where(criteriaBuilder.equal(reviewRoot.get("movie").get("id"), movieId));
 
         Long count = entityManager.createQuery(countQuery).getSingleResult();
@@ -100,7 +81,7 @@ public class ReviewDaoImpl implements ReviewDao {
 
         Pagination<Review> pagination = new Pagination(lastPageNumber, reviews);
 
-        return Optional.ofNullable(pagination);
+        return pagination;
     }
 
     @Override
@@ -111,6 +92,7 @@ public class ReviewDaoImpl implements ReviewDao {
 
     @Override
     public Review update(Review review) {
+        System.out.println(ReviewDaoImpl.class + " : " + review);
         return entityManager.merge(review);
     }
 

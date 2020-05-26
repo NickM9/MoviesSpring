@@ -16,15 +16,18 @@ public class Error {
 
     private int code;
     private String message;
-    private List<FieldError> fieldErrors = new ArrayList<>();
+    private List<String> details;
+
 
     public Error(int code, String message) {
         this.code = code;
         this.message = message;
     }
 
-    public void addFieldError(String objectName, String field, String message) {
-        FieldError error = new FieldError(objectName, field, message);
-        fieldErrors.add(error);
+    public Error(int code, String message, List<String> details) {
+        this.code = code;
+        this.message = message;
+        this.details = details;
     }
+
 }

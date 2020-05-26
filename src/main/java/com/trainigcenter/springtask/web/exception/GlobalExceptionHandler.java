@@ -4,8 +4,6 @@ import com.trainigcenter.springtask.web.dto.Error;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -13,7 +11,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -21,26 +22,27 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
 
-        BindingResult result = ex.getBindingResult();
-        List<FieldError> fieldErrors = result.getFieldErrors();
-        Error error = new Error(HttpStatus.BAD_REQUEST.value(), "validation error");
-        for (FieldError fieldError : fieldErrors){
-            error.addFieldError(fieldError.getObjectName(), fieldError.getField(), fieldError.getDefaultMessage());
-        }
 
+        List<String> details = ex.getBindingResult().getFieldErrors()
+                                 .stream()
+                                 .map(err -> err.getField() + " : " + err.getRejectedValue() + " : " + err.getDefaultMessage())
+                                 .collect(Collectors.toList());
+
+        Error error = new Error(HttpStatus.BAD_REQUEST.value(), "validation error", details);
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-    @Override
-    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        Error error = new Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getStackTrace().toString());
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getLocalizedMessage());
 
-    @Override
-    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        Error error = new Error(HttpStatus.BAD_REQUEST.value(), "Method not supported");
-        return new ResponseEntity<>(error, HttpStatus.METHOD_NOT_ALLOWED);
+        for (StackTraceElement stackTrace : ex.getStackTrace()) {
+            details.add(stackTrace.toString());
+        }
+
+        Error error = new Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Server error", details);
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(MethodNotAllowedException.class)

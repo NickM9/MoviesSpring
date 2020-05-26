@@ -8,9 +8,9 @@ import java.util.Optional;
 
 public interface ReviewService {
 
-    Optional<Review> getById(Integer id, Integer movieId);
+    Optional<Review> getById(Integer id);
 
-    Optional<Pagination<Review>> getAll(Integer movieId, int page, int size);
+    Pagination<Review> getAll(Integer movieId, int page, int size);
 
     Review create(Review review);
 

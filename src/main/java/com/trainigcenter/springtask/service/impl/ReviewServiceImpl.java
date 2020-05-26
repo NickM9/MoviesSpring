@@ -27,12 +27,12 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Optional<Review> getById(Integer id, Integer movieId) {
-        return reviewDao.findById(id, movieId);
+    public Optional<Review> getById(Integer id) {
+        return reviewDao.findById(id);
     }
 
     @Override
-    public Optional<Pagination<Review>> getAll(Integer movieId, int page, int size) {
+    public Pagination<Review> getAll(Integer movieId, int page, int size) {
         return reviewDao.findAll(movieId, page, size);
     }
 
@@ -51,7 +51,8 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional
     public Review update(Review review) {
-        Optional<Review> dbReview = reviewDao.findById(review.getId(), review.getMovie().getId());
+        Optional<Review> dbReview = reviewDao.findById(review.getId());
+        System.out.println(ReviewServiceImpl.class + " : " + dbReview);
         dbReview.orElseThrow(() -> new NotFoundException("Review id:" + review.getId() + " not found"));
 
         return reviewDao.update(review);

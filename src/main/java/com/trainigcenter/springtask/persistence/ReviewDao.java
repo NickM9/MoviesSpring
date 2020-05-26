@@ -8,9 +8,9 @@ import java.util.Optional;
 
 public interface ReviewDao {
 
-    Optional<Review> findById(Integer id, Integer movieId);
+    Optional<Review> findById(Integer id);
 
-    Optional<Pagination<Review>> findAll(Integer movieId, int page, int size);
+    Pagination<Review> findAll(Integer movieId, int page, int size);
 
     Review create(Review review);
 

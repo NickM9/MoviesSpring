@@ -54,7 +54,7 @@ public class ReviewController {
 
         movieService.getById(movieId).orElseThrow(() -> new NotFoundException("Movie id:" + movieId + " not found"));
 
-        Pagination<Review> allReviews = reviewService.getAll(movieId, page, size).get();
+        Pagination<Review> allReviews = reviewService.getAll(movieId, page, size);
 
         if (page > allReviews.getMaxPage()){
             throw new NotFoundException("Page " + page + " not found");
@@ -68,7 +68,7 @@ public class ReviewController {
                                    @PathVariable("id") Integer id) {
 
         movieService.getById(movieId).orElseThrow(() -> new NotFoundException("Movie id:" + movieId + " not found"));
-        Review review = reviewService.getById(id, movieId).orElseThrow(() -> new NotFoundException("Review id:" + id + " not found"));
+        Review review = reviewService.getById(id).orElseThrow(() -> new NotFoundException("Review id:" + id + " not found"));
 
         return convertToDto(review);
     }
@@ -80,7 +80,9 @@ public class ReviewController {
 
         movieService.getById(movieId).orElseThrow(() -> new NotFoundException("Movie id:" + movieId + " not found"));
         reviewDto.setId(null);
-        Review review = reviewService.create(convertFromDto(reviewDto));
+        Review review = convertFromDto(reviewDto);
+        review.setMovie(movieService.getById(movieId).get());
+        review = reviewService.create(review);
 
         return convertToDto(review);
     }
@@ -94,6 +96,7 @@ public class ReviewController {
 
         Review review = convertFromDto(reviewDto);
         review.setId(id);
+        review.setMovie(movieService.getById(movieId).get());
 
         return convertToDto(reviewService.update(review));
     }
@@ -104,7 +107,7 @@ public class ReviewController {
                              @PathVariable("id") Integer id) {
 
         movieService.getById(movieId).orElseThrow(() -> new NotFoundException("Movie id:" + movieId + " not found"));
-        Review review = reviewService.getById(id, movieId).orElseThrow(() -> new NotFoundException("Review id:" + id + " not found"));
+        Review review = reviewService.getById(id).orElseThrow(() -> new NotFoundException("Review id:" + id + " not found"));
         reviewService.delete(review.getId());
     }
 
