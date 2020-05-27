@@ -5,7 +5,6 @@ plugins {
 
 group 'org.example'
 version '1.0-SNAPSHOT'
-apply plugin: 'war'
 
 repositories {
     mavenCentral()
@@ -15,10 +14,6 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
     implementation 'org.apache.logging.log4j:log4j-api:2.13.3'
 
-    // https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api
-    compile group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
-
-
     // https://mvnrepository.com/artifact/org.hibernate/hibernate-core
     implementation 'org.hibernate:hibernate-core:5.4.15.Final'
     implementation 'org.hibernate:hibernate-entitymanager:5.4.15.Final'
@@ -26,15 +21,15 @@ dependencies {
 
     implementation 'org.postgresql:postgresql:42.2.12'
 
-    compile group: 'org.springframework', name: 'spring-context', version: '5.2.6.RELEASE'
-    compile group: 'org.springframework', name: 'spring-core', version: '5.2.6.RELEASE'
-    compile group: 'org.springframework', name: 'spring-beans', version: '5.2.6.RELEASE'
-    compile group: 'org.springframework', name: 'spring-orm', version: '5.2.6.RELEASE'
-    compile group: 'org.springframework', name: 'spring-jdbc', version: '5.2.6.RELEASE'
-    compile group: 'org.springframework', name: 'spring-web', version: '5.2.6.RELEASE'
-    compile group: 'org.springframework', name: 'spring-webmvc', version: '5.2.6.RELEASE'
-    compile group: 'org.springframework.data', name: 'spring-data-commons', version: '2.3.0.RELEASE'
-    compile group: 'org.springframework.data', name: 'spring-data-jpa', version: '2.3.0.RELEASE'
+    implementation 'org.springframework:spring-context:5.2.6.RELEASE'
+    implementation 'org.springframework:spring-core:5.2.6.RELEASE'
+    implementation 'org.springframework:spring-beans:5.2.6.RELEASE'
+    implementation 'org.springframework:spring-orm:5.2.6.RELEASE'
+    implementation 'org.springframework:spring-jdbc:5.2.6.RELEASE'
+    implementation 'org.springframework:spring-web:5.2.6.RELEASE'
+    implementation 'org.springframework:spring-webmvc:5.2.6.RELEASE'
+    implementation 'org.springframework.data:spring-data-commons:2.3.0.RELEASE'
+    implementation 'org.springframework.data:spring-data-jpa:2.3.0.RELEASE'
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.0'
