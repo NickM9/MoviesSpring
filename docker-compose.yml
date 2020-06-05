@@ -7,7 +7,7 @@ services:
     container_name: tomcat-container
     restart: always
     environment:
-      JPDA_ADDRESS: 8000
+      JPDA_ADDRESS: "*:8000"
       JPDA_TRANSPORT: dt_socket
     entrypoint: /usr/local/tomcat/bin/catalina.sh jpda run
     ports:
