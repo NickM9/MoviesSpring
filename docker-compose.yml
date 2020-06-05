@@ -4,11 +4,10 @@ services:
 
   tomcat:
     build: ./
-    container_name: tomcat-container
+    container_name: tomcat
     restart: always
     environment:
       JPDA_ADDRESS: "*:8000"
-      JPDA_TRANSPORT: dt_socket
     entrypoint: /usr/local/tomcat/bin/catalina.sh jpda run
     ports:
       - 8080:8080
@@ -18,7 +17,7 @@ services:
 
   db:
     image: postgres:12
-    container_name: postgres-container
+    container_name: postgres
     restart: always
     environment:
       POSTGRES_USER: postgres
