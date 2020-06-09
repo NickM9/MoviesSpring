@@ -13,6 +13,8 @@ repositories {
 dependencies {
     // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
     implementation 'org.apache.logging.log4j:log4j-api:2.13.3'
+    
+    implementation 'javax.servlet:javax.servlet-api:4.0.1
 
     // https://mvnrepository.com/artifact/org.hibernate/hibernate-core
     implementation 'org.hibernate:hibernate-core:5.4.15.Final'
