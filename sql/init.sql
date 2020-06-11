@@ -26,7 +26,7 @@ ALTER TABLE dockerspringmovies.genres
     OWNER to postgres;
 
 -- Movies table
-CREATE TABLE dockerspringmovies.movie
+CREATE TABLE dockerspringmovies.movies
 (
     id serial NOT NULL,
     title character varying(140) NOT NULL,
@@ -37,7 +37,7 @@ CREATE TABLE dockerspringmovies.movie
 
 TABLESPACE pg_default;
 
-ALTER TABLE dockerspringmovies.movie
+ALTER TABLE dockerspringmovies.movies
     OWNER to postgres;
 
 
@@ -52,7 +52,7 @@ CREATE TABLE dockerspringmovies.reviews
     rating double precision NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (movie_id)
-        REFERENCES dockerspringmovies.movie (id) MATCH SIMPLE
+        REFERENCES dockerspringmovies.movies (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE CASCADE
         NOT VALID
@@ -68,7 +68,7 @@ CREATE TABLE dockerspringmovies.movie_actors
     actor_id integer NOT NULL,
     PRIMARY KEY (movie_id, actor_id),
     FOREIGN KEY (movie_id)
-        REFERENCES dockerspringmovies.movie (id) MATCH SIMPLE
+        REFERENCES dockerspringmovies.movies (id) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE CASCADE
         NOT VALID,
@@ -89,7 +89,7 @@ CREATE TABLE dockerspringmovies.movie_genres
     genre_id integer NOT NULL,
     PRIMARY KEY (movie_id, genre_id),
     FOREIGN KEY (movie_id)
-        REFERENCES dockerspringmovies.movie (id) MATCH SIMPLE
+        REFERENCES dockerspringmovies.movies (id) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE CASCADE
         NOT VALID,
@@ -108,11 +108,11 @@ INSERT INTO dockerspringmovies.actors(name, birth_year) VALUES ('Robert Downey J
 INSERT INTO dockerspringmovies.actors(name, birth_year) VALUES ('Chris Evans', 1981);
 INSERT INTO dockerspringmovies.actors(name, birth_year) VALUES ('Chris Hemsworth', 1983);
 
-INSERT INTO dockerspringmovies.genres(name) VALUES ('action');
-INSERT INTO dockerspringmovies.genres(name) VALUES ('comedy');
-INSERT INTO dockerspringmovies.genres(name) VALUES ('science fiction');
+INSERT INTO dockerspringmovies.genres(name) VALUES ('Action');
+INSERT INTO dockerspringmovies.genres(name) VALUES ('Comedy');
+INSERT INTO dockerspringmovies.genres(name) VALUES ('Science fiction');
 
-INSERT INTO dockerspringmovies.movie(title, description, duration) VALUES ('The Avengers', 'Avengers description. Very good!', 8520);
+INSERT INTO dockerspringmovies.movies(title, description, duration) VALUES ('The Avengers', 'Avengers description. Very good!', 8520);
 
 INSERT INTO dockerspringmovies.reviews(movie_id, author_name, title, text, rating)
 	VALUES (1, 'Joe Russo', 'Tittle, very good film!', 'The big text abount The avengers film', 8.7);
