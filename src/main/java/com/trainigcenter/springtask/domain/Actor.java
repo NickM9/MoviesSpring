@@ -3,8 +3,6 @@ package com.trainigcenter.springtask.domain;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,7 +31,6 @@ public class Actor {
     private int birthYear;
 
     @ManyToMany(mappedBy = "actors")
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<Movie> actorMovies;
 
     @Override

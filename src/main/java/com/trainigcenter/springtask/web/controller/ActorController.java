@@ -4,10 +4,10 @@ import com.trainigcenter.springtask.domain.Actor;
 import com.trainigcenter.springtask.service.ActorService;
 import com.trainigcenter.springtask.web.dto.ActorDto;
 import com.trainigcenter.springtask.web.exception.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/actors")
 public class ActorController {
 
@@ -31,12 +32,6 @@ public class ActorController {
 
     private final ActorService actorService;
     private final ModelMapper modelMapper;
-
-    @Autowired
-    public ActorController(ActorService actorService, ModelMapper modelMapper) {
-        this.actorService = actorService;
-        this.modelMapper = modelMapper;
-    }
 
     @GetMapping
     public List<ActorDto> getAll() {

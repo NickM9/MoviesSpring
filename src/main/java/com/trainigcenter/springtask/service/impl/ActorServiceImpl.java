@@ -1,13 +1,13 @@
 package com.trainigcenter.springtask.service.impl;
 
 import com.trainigcenter.springtask.domain.Actor;
-import com.trainigcenter.springtask.persistence.ActorDao;
+import com.trainigcenter.springtask.persistence.ActorRepository;
 import com.trainigcenter.springtask.service.ActorService;
 import com.trainigcenter.springtask.web.exception.MethodNotAllowedException;
 import com.trainigcenter.springtask.web.exception.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -15,78 +15,63 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ActorServiceImpl implements ActorService {
 
     private static final Logger logger = LogManager.getLogger(ActorServiceImpl.class);
 
-    private final ActorDao actorDao;
+    private final ActorRepository actorRepository;
 
-    @Autowired
-    public ActorServiceImpl(ActorDao actorDao) {
-        this.actorDao = actorDao;
+    @Override
+    public List<Actor> getAll() {
+        return actorRepository.findAll();
     }
 
     @Override
     public Optional<Actor> getById(Integer id) {
-        return actorDao.findById(id);
-    }
-
-    @Override
-    public List<Actor> getAll() {
-        return actorDao.findAll();
-    }
-
-    @Override
-    public Optional<Actor> getByName(String name) {
-        return actorDao.findByName(mapActorName(name));
+        return actorRepository.findById(id);
     }
 
     @Override
     @Transactional
     public Actor create(Actor actor) {
         actor.setId(null);
-        actor.setName(mapActorName(actor.getName()));
 
-        Optional<Actor> dbActor = actorDao.findByName(actor.getName());
+        Optional<Actor> dbActor = actorRepository.findByNameIgnoreCase(actor.getName());
 
         if (dbActor.isPresent()) {
-            throw new MethodNotAllowedException("Actor name:" + actor.getName() + " already exists with id: " + dbActor.get().getId());
+            throw new MethodNotAllowedException("Actor name: " + dbActor.get().getName() + " already exists with id: " + dbActor.get().getId());
         }
 
-        return actorDao.create(actor);
+        return actorRepository.save(actor);
     }
 
     @Override
     @Transactional
     public Actor update(Actor actor, int id) {
         actor.setId(id);
-        actor.setName(mapActorName(actor.getName()));
 
-        Optional<Actor> dbActor = actorDao.findById(actor.getId());
-        dbActor.orElseThrow(() -> new NotFoundException("Actor id:" + actor.getId() + " not found"));
+        Optional<Actor> dbActor = actorRepository.findById(actor.getId());
+        dbActor.orElseThrow(() -> new NotFoundException("Actor id: " + dbActor.get().getId() + " not found"));
 
-        return actorDao.update(actor);
+        return actorRepository.save(actor);
     }
 
     @Override
     public Optional<Actor> getByIdWithMovies(Integer id) {
-        return actorDao.findByIdWithMovies(id);
+        return actorRepository.findOneWithMoviesById(id);
     }
 
     @Override
     @Transactional
     public void delete(Integer id) {
-        Actor actor = actorDao.findByIdWithMovies(id).get();
+        Actor actor = actorRepository.findOneWithMoviesById(id).get();
 
         if (!actor.getActorMovies().isEmpty()) {
-            throw new MethodNotAllowedException("Actor id:" + id + " take part in movies");
+            throw new MethodNotAllowedException("Actor id: " + id + " take part in movies");
         }
 
-        actorDao.delete(actor.getId());
+        actorRepository.deleteById(actor.getId());
     }
 
-    private String mapActorName(String actorName){
-        actorName = actorName.toLowerCase();
-        return actorName;
-    }
 }

@@ -7,18 +7,15 @@ import java.util.Optional;
 
 public interface ActorService {
 
-    Optional<Actor> getById(Integer id);
-
     List<Actor> getAll();
 
-    Optional<Actor> getByName(String name);
+    Optional<Actor> getById(Integer id);
 
     Actor create(Actor actor);
 
     Actor update(Actor actor, int id);
 
-    void delete(Integer id);
-
     Optional<Actor> getByIdWithMovies(Integer id);
 
+    void delete(Integer id);
 }

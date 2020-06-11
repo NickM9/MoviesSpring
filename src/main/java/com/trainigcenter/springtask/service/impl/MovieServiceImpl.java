@@ -1,14 +1,15 @@
 package com.trainigcenter.springtask.service.impl;
 
 import com.trainigcenter.springtask.domain.Movie;
-import com.trainigcenter.springtask.domain.util.Pagination;
-import com.trainigcenter.springtask.persistence.MovieDao;
+import com.trainigcenter.springtask.persistence.MovieRepository;
 import com.trainigcenter.springtask.service.MovieService;
 import com.trainigcenter.springtask.web.exception.MethodNotAllowedException;
 import com.trainigcenter.springtask.web.exception.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -16,25 +17,21 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class MovieServiceImpl implements MovieService {
 
     private static final Logger logger = LogManager.getLogger(MovieServiceImpl.class);
 
-    private final MovieDao movieDao;
+    private final MovieRepository movieRepository;
 
-    @Autowired
-    public MovieServiceImpl(MovieDao movieDao) {
-        this.movieDao = movieDao;
+    @Override
+    public Page<Movie> getAll(Pageable pageable) {
+        return movieRepository.findAll(pageable);
     }
 
     @Override
     public Optional<Movie> getById(Integer id) {
-        return movieDao.findById(id);
-    }
-
-    @Override
-    public Pagination<Movie> getAll(int page, int size) {
-        return movieDao.findAll(page, size);
+        return movieRepository.findById(id);
     }
 
     @Override
@@ -42,7 +39,7 @@ public class MovieServiceImpl implements MovieService {
     public Movie create(Movie movie) {
         movie.setId(null);
 
-        List<Movie> movies = movieDao.findMoviesByName(movie.getTitle());
+        List<Movie> movies = movieRepository.findMoviesByTitle(movie.getTitle());
 
         for (Movie m : movies) {
             if (movie.equals(m)) {
@@ -50,28 +47,23 @@ public class MovieServiceImpl implements MovieService {
             }
         }
 
-        return movieDao.create(movie);
+        return movieRepository.save(movie);
     }
 
     @Override
     @Transactional
     public Movie update(Movie movie, int id) {
         movie.setId(id);
-        Optional<Movie> dbMovie = movieDao.findById(movie.getId());
-        dbMovie.orElseThrow(() -> new NotFoundException("Movie id:" + movie.getId() + " not found"));
 
-        return movieDao.update(movie);
+        Optional<Movie> dbMovie = movieRepository.findById(movie.getId());
+        dbMovie.orElseThrow(() -> new NotFoundException("Movie id: " + movie.getId() + " not found"));
+
+        return movieRepository.save(movie);
     }
 
     @Override
     @Transactional
     public void delete(Integer id) {
-        movieDao.delete(id);
+        movieRepository.deleteById(id);
     }
-
-    @Override
-    public Pagination<Movie> getAllByGenre(Integer genreId, int page, int size) {
-        return movieDao.findAllByGenre(genreId, page, size);
-    }
-
 }

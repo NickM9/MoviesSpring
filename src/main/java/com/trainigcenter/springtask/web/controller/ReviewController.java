@@ -1,15 +1,17 @@
 package com.trainigcenter.springtask.web.controller;
 
 import com.trainigcenter.springtask.domain.Review;
-import com.trainigcenter.springtask.domain.util.Pagination;
 import com.trainigcenter.springtask.service.MovieService;
 import com.trainigcenter.springtask.service.ReviewService;
 import com.trainigcenter.springtask.web.dto.ReviewDto;
 import com.trainigcenter.springtask.web.exception.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,10 +25,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/movies/{movieId}/reviews")
 public class ReviewController {
 
@@ -36,15 +37,8 @@ public class ReviewController {
     private final MovieService movieService;
     private final ModelMapper modelMapper;
 
-    @Autowired
-    public ReviewController(ReviewService reviewService, MovieService movieService, ModelMapper modelMapper) {
-        this.reviewService = reviewService;
-        this.movieService = movieService;
-        this.modelMapper = modelMapper;
-    }
-
     @GetMapping
-    public Pagination<ReviewDto> getAll(@RequestParam(value = "page", defaultValue = "1") int page,
+    public Page<ReviewDto> getAll(@RequestParam(value = "page", defaultValue = "1") int page,
                                   @RequestParam(value = "size", defaultValue = "2") int size,
                                   @PathVariable("movieId") int movieId) {
 
@@ -52,15 +46,17 @@ public class ReviewController {
             throw new NotFoundException("Page and size can't be less than 1");
         }
 
-        movieService.getById(movieId).orElseThrow(() -> new NotFoundException("Movie id:" + movieId + " not found"));
+        movieService.getById(movieId).orElseThrow(() -> new NotFoundException("Movie id: " + movieId + " not found"));
 
-        Pagination<Review> allReviews = reviewService.getAll(movieId, page, size);
+        Pageable pageable = PageRequest.of(page - 1, size);
 
-        if (page > allReviews.getMaxPage()){
+        Page<Review> reviews = reviewService.getAll(movieId, pageable);
+
+        if (page > reviews.getTotalPages()) {
             throw new NotFoundException("Page " + page + " not found");
         }
 
-        return convertToPaginationDto(allReviews);
+        return convertToPaginationDto(reviews);
     }
 
     @GetMapping("/{id}")
@@ -113,13 +109,7 @@ public class ReviewController {
         return modelMapper.map(reviewDto, Review.class);
     }
 
-    private Pagination<ReviewDto> convertToPaginationDto(Pagination<Review> pagination) {
-        List<ReviewDto> reviews = pagination.getObjects()
-                                           .stream()
-                                           .map(this::convertToDto)
-                                           .collect(Collectors.toList());
-
-        return new Pagination<>(pagination.getMaxPage(), reviews);
+    private Page<ReviewDto> convertToPaginationDto(Page<Review> reviewPagination) {
+        return reviewPagination.map(this::convertToDto);
     }
-
 }

@@ -4,10 +4,10 @@ import com.trainigcenter.springtask.domain.Genre;
 import com.trainigcenter.springtask.service.GenreService;
 import com.trainigcenter.springtask.web.dto.GenreDto;
 import com.trainigcenter.springtask.web.exception.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/genres")
 public class GenreController {
 
@@ -31,12 +32,6 @@ public class GenreController {
 
     private final GenreService genreService;
     private final ModelMapper modelMapper;
-
-    @Autowired
-    public GenreController(GenreService genreService, ModelMapper modelMapper) {
-        this.genreService = genreService;
-        this.modelMapper = modelMapper;
-    }
 
     @GetMapping
     public List<GenreDto> getAll() {
@@ -69,7 +64,7 @@ public class GenreController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void  deleteGenre(@PathVariable("id") Integer id) {
+    public void deleteGenre(@PathVariable("id") Integer id) {
         Genre genre = genreService.getByIdWithMovies(id).orElseThrow(() -> new NotFoundException("Genre id:" + id + " not found"));
         genreService.delete(genre.getId());
     }
