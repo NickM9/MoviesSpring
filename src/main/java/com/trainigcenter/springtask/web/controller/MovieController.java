@@ -5,12 +5,9 @@ import com.trainigcenter.springtask.service.MovieService;
 import com.trainigcenter.springtask.web.dto.MovieDto;
 import com.trainigcenter.springtask.web.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,10 +24,9 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
+@Log4j2
 @RequestMapping("/movies")
 public class MovieController {
-
-    private static final Logger logger = LogManager.getLogger(MovieController.class);
 
     private final MovieService movieService;
     private final ModelMapper modelMapper;
@@ -43,21 +39,12 @@ public class MovieController {
             throw new NotFoundException("Page and size can't be less than 1");
         }
 
-        Pageable pageable = PageRequest.of(page - 1, size);
-
-        Page<Movie> moviePagination = movieService.getAll(pageable);
-
-        if (page > moviePagination.getTotalPages()) {
-            throw new NotFoundException("Page " + page + " not found");
-        }
-
-        return convertToPaginationDto(moviePagination);
+        return convertToPaginationDto(movieService.getAll(page, size));
     }
 
     @GetMapping("/{id}")
     public MovieDto getMovieById(@PathVariable("id") int id) {
         Movie movie = movieService.getById(id).orElseThrow(() -> new NotFoundException("Movie id:" + id + " not found"));
-
         return convertToDto(movie);
     }
 
@@ -79,7 +66,6 @@ public class MovieController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMovie(@PathVariable("id") Integer id) {
-
         Movie movie = movieService.getById(id).orElseThrow(() -> new NotFoundException("Movie id: " + id + " not found"));
         movieService.delete(movie.getId());
     }

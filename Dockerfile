@@ -1,4 +1,6 @@
-FROM tomcat:9-jdk11
+FROM openjdk:11
 
-COPY ./build/libs/SpringMovies-1.0-SNAPSHOT.war /usr/local/tomcat/webapps/spring-movies.war
+ARG JAR_FILE=build/libs/SpringMovies-1.0-SNAPSHOT.jar
+ADD ${JAR_FILE} spring-movies.jar
 
+ENTRYPOINT ["java", "-jar", "spring-movies.jar"]

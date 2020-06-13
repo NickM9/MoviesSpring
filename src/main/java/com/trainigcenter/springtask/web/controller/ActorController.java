@@ -5,8 +5,7 @@ import com.trainigcenter.springtask.service.ActorService;
 import com.trainigcenter.springtask.web.dto.ActorDto;
 import com.trainigcenter.springtask.web.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,20 +24,19 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
+@Log4j2
 @RequestMapping("/actors")
 public class ActorController {
-
-    private static final Logger logger = LogManager.getLogger(ActorController.class);
 
     private final ActorService actorService;
     private final ModelMapper modelMapper;
 
     @GetMapping
     public List<ActorDto> getAll() {
-        List<Actor> allActors = actorService.getAll();
-        return allActors.stream()
-                        .map(this::convertToDto)
-                        .collect(Collectors.toList());
+        return actorService.getAll()
+                           .stream()
+                           .map(this::convertToDto)
+                           .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")

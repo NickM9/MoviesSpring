@@ -6,8 +6,7 @@ import com.trainigcenter.springtask.service.ActorService;
 import com.trainigcenter.springtask.web.exception.MethodNotAllowedException;
 import com.trainigcenter.springtask.web.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -15,10 +14,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Log4j2
 @RequiredArgsConstructor
 public class ActorServiceImpl implements ActorService {
-
-    private static final Logger logger = LogManager.getLogger(ActorServiceImpl.class);
 
     private final ActorRepository actorRepository;
 
@@ -48,24 +46,30 @@ public class ActorServiceImpl implements ActorService {
 
     @Override
     @Transactional
-    public Actor update(Actor actor, int id) {
+    public Actor update(Actor actor, Integer id) {
         actor.setId(id);
 
-        Optional<Actor> dbActor = actorRepository.findById(actor.getId());
-        dbActor.orElseThrow(() -> new NotFoundException("Actor id: " + dbActor.get().getId() + " not found"));
+        actorRepository.findById(actor.getId())
+                       .orElseThrow(() -> new NotFoundException("Actor id: " + id + " not found"));
+
+        Optional<Actor> dbActor = actorRepository.findByNameIgnoreCase(actor.getName());
+
+        if (dbActor.isPresent()) {
+            throw new MethodNotAllowedException("Actor name: " + dbActor.get().getName() + " already exists with id: " + dbActor.get().getId());
+        }
 
         return actorRepository.save(actor);
     }
 
     @Override
     public Optional<Actor> getByIdWithMovies(Integer id) {
-        return actorRepository.findOneWithMoviesById(id);
+        return actorRepository.findWithMoviesById(id);
     }
 
     @Override
     @Transactional
     public void delete(Integer id) {
-        Actor actor = actorRepository.findOneWithMoviesById(id).get();
+        Actor actor = actorRepository.findWithMoviesById(id).get();
 
         if (!actor.getActorMovies().isEmpty()) {
             throw new MethodNotAllowedException("Actor id: " + id + " take part in movies");

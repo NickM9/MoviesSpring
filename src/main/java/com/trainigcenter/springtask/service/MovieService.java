@@ -2,19 +2,18 @@ package com.trainigcenter.springtask.service;
 
 import com.trainigcenter.springtask.domain.Movie;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
 public interface MovieService {
 
-    Page<Movie> getAll(Pageable pageable);
+    Page<Movie> getAll(int page, int size);
 
     Optional<Movie> getById(Integer id);
 
     Movie create(Movie movie);
 
-    Movie update(Movie movie, int id);
+    Movie update(Movie movie, Integer id);
 
     void delete(Integer id);
 }

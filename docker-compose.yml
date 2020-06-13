@@ -2,16 +2,11 @@ version: '3.7'
 
 services:
 
-  tomcat:
+  app:
     build: ./
-    container_name: tomcat
-    restart: always
-    environment:
-      JPDA_ADDRESS: "*:8000"
-    entrypoint: /usr/local/tomcat/bin/catalina.sh jpda run
+    container_name: app
     ports:
-      - 8080:8080
-      - 8000:8000
+      - "8080:8080"
     depends_on:
       - db
 

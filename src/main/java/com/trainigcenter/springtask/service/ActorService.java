@@ -13,7 +13,7 @@ public interface ActorService {
 
     Actor create(Actor actor);
 
-    Actor update(Actor actor, int id);
+    Actor update(Actor actor, Integer id);
 
     Optional<Actor> getByIdWithMovies(Integer id);
 

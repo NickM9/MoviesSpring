@@ -6,8 +6,7 @@ import com.trainigcenter.springtask.service.GenreService;
 import com.trainigcenter.springtask.web.exception.MethodNotAllowedException;
 import com.trainigcenter.springtask.web.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -15,10 +14,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Log4j2
 @RequiredArgsConstructor
 public class GenreServiceImpl implements GenreService {
-
-    private static final Logger logger = LogManager.getLogger(GenreServiceImpl.class);
 
     private final GenreRepository genreRepository;
 
@@ -48,7 +46,7 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     @Transactional
-    public Genre update(Genre genre, int id) {
+    public Genre update(Genre genre, Integer id) {
         genre.setId(id);
 
         Optional<Genre> dbGenre = genreRepository.findById(genre.getId());

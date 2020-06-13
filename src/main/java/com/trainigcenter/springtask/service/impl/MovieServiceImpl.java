@@ -6,9 +6,9 @@ import com.trainigcenter.springtask.service.MovieService;
 import com.trainigcenter.springtask.web.exception.MethodNotAllowedException;
 import com.trainigcenter.springtask.web.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -17,16 +17,23 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Log4j2
 @RequiredArgsConstructor
 public class MovieServiceImpl implements MovieService {
-
-    private static final Logger logger = LogManager.getLogger(MovieServiceImpl.class);
 
     private final MovieRepository movieRepository;
 
     @Override
-    public Page<Movie> getAll(Pageable pageable) {
-        return movieRepository.findAll(pageable);
+    public Page<Movie> getAll(int page, int size) {
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        Page<Movie> moviePagination = movieRepository.findAll(pageable);
+
+        if (page > moviePagination.getTotalPages()) {
+            throw new NotFoundException("Page " + page + " not found");
+        }
+        return moviePagination;
     }
 
     @Override
@@ -52,7 +59,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     @Transactional
-    public Movie update(Movie movie, int id) {
+    public Movie update(Movie movie, Integer id) {
         movie.setId(id);
 
         Optional<Movie> dbMovie = movieRepository.findById(movie.getId());

@@ -5,8 +5,7 @@ import com.trainigcenter.springtask.service.GenreService;
 import com.trainigcenter.springtask.web.dto.GenreDto;
 import com.trainigcenter.springtask.web.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,20 +24,19 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
+@Log4j2
 @RequestMapping("/genres")
 public class GenreController {
-
-    private static final Logger logger = LogManager.getLogger(GenreController.class);
 
     private final GenreService genreService;
     private final ModelMapper modelMapper;
 
     @GetMapping
     public List<GenreDto> getAll() {
-        List<Genre> allGenres = genreService.getAll();
-        return allGenres.stream()
-                        .map(this::convertToDto)
-                        .collect(Collectors.toList());
+        return genreService.getAll()
+                           .stream()
+                           .map(this::convertToDto)
+                           .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")

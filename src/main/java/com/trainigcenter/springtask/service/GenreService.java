@@ -13,7 +13,7 @@ public interface GenreService {
 
     Genre create(Genre genre);
 
-    Genre update(Genre genre, int id);
+    Genre update(Genre genre, Integer id);
 
     Optional<Genre> getByIdWithMovies(Integer id);
 
