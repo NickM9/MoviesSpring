@@ -11,11 +11,7 @@ public interface ActorService {
 
     Optional<Actor> getById(Integer id);
 
-    Actor create(Actor actor);
-
-    Actor update(Actor actor, Integer id);
-
-    Optional<Actor> getByIdWithMovies(Integer id);
+    Actor save(Actor actor);
 
     void delete(Integer id);
 }

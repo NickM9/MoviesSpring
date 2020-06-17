@@ -1,6 +1,5 @@
 FROM openjdk:11
 
-ARG JAR_FILE=build/libs/SpringMovies-1.0-SNAPSHOT.jar
-ADD ${JAR_FILE} spring-movies.jar
+ADD build/libs/SpringMovies-1.0-SNAPSHOT.jar movies.jar
 
-ENTRYPOINT ["java", "-jar", "spring-movies.jar"]
+ENTRYPOINT ["java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000", "-jar", "movies.jar"]

@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface GenreRepository extends JpaRepository<Genre, Integer> {
 
-    Optional<Genre> findByNameIgnoreCase(String name);
+    boolean existsByNameIgnoreCase(String name);
 
     @EntityGraph(attributePaths = {"genreMovies"})
     Optional<Genre> findWithMoviesById(Integer id);

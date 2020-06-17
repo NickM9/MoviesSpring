@@ -1,4 +1,4 @@
-package com.trainigcenter.springtask.web.exception;
+package com.trainigcenter.springtask.domain.exception;
 
 import lombok.Getter;
 import lombok.Setter;

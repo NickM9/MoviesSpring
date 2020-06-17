@@ -1,4 +1,4 @@
-package com.trainigcenter.springtask.web.exception;
+package com.trainigcenter.springtask.domain.exception;
 
 import com.trainigcenter.springtask.web.dto.Error;
 import org.springframework.http.HttpHeaders;
@@ -45,10 +45,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(MethodNotAllowedException.class)
-    public ResponseEntity<Object> handleMethodNotAllowedException(MethodNotAllowedException e, WebRequest request) {
-        Error error = new Error(HttpStatus.METHOD_NOT_ALLOWED.value(), e.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.METHOD_NOT_ALLOWED);
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<Object> handleBadRequestException(BadRequestException e, WebRequest request) {
+        Error error = new Error(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NotFoundException.class)

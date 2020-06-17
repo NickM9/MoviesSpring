@@ -1,11 +1,11 @@
 package com.trainigcenter.springtask.web.controller;
 
 import com.trainigcenter.springtask.domain.Actor;
+import com.trainigcenter.springtask.domain.exception.NotFoundException;
 import com.trainigcenter.springtask.service.ActorService;
 import com.trainigcenter.springtask.web.dto.ActorDto;
-import com.trainigcenter.springtask.web.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 @RequestMapping("/actors")
 public class ActorController {
 
@@ -40,32 +40,30 @@ public class ActorController {
     }
 
     @GetMapping("/{id}")
-    public ActorDto getActorById(@PathVariable Integer id) {
-        Actor actor = actorService.getById(id).orElseThrow(() -> new NotFoundException("Actor id:" + id + " not found"));
-
-        return convertToDto(actor);
+    public ActorDto getById(@PathVariable Integer id) {
+        return convertToDto(actorService.getById(id).orElseThrow(() -> new NotFoundException("Actor id:" + id + " not found")));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ActorDto saveActor(@Valid @RequestBody ActorDto actorDto) {
-        Actor actor = actorService.create(convertFromDto(actorDto));
+    public ActorDto save(@Valid @RequestBody ActorDto actorDto) {
+        actorDto.setId(null);
+        Actor actor = actorService.save(convertFromDto(actorDto));
         return convertToDto(actor);
     }
 
     @PutMapping("/{id}")
-    public ActorDto updateActor(@PathVariable("id") int id,
-                                @Valid @RequestBody ActorDto actorDto) {
-
-        Actor actor = convertFromDto(actorDto);
-        return convertToDto(actorService.update(actor, id));
+    public ActorDto update(@PathVariable("id") int id,
+                           @Valid @RequestBody ActorDto actorDto) {
+        actorDto.setId(id);
+        Actor actor = actorService.save(convertFromDto(actorDto));
+        return convertToDto(actor);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteActor(@PathVariable("id") Integer id) {
-        Actor actor = actorService.getByIdWithMovies(id).orElseThrow(() -> new NotFoundException("Actor id:" + id + " not found"));
-        actorService.delete(actor.getId());
+    public void delete(@PathVariable("id") Integer id) {
+        actorService.delete(id);
     }
 
     private ActorDto convertToDto(Actor actor) {
@@ -75,5 +73,4 @@ public class ActorController {
     private Actor convertFromDto(ActorDto actorDto) {
         return modelMapper.map(actorDto, Actor.class);
     }
-
 }

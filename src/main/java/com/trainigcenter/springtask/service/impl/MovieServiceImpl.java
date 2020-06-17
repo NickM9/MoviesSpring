@@ -1,15 +1,17 @@
 package com.trainigcenter.springtask.service.impl;
 
 import com.trainigcenter.springtask.domain.Movie;
+import com.trainigcenter.springtask.domain.Pagination;
+import com.trainigcenter.springtask.domain.exception.BadRequestException;
+import com.trainigcenter.springtask.domain.exception.NotFoundException;
 import com.trainigcenter.springtask.persistence.MovieRepository;
 import com.trainigcenter.springtask.service.MovieService;
-import com.trainigcenter.springtask.web.exception.MethodNotAllowedException;
-import com.trainigcenter.springtask.web.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -17,22 +19,43 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Log4j2
+@Slf4j
 @RequiredArgsConstructor
 public class MovieServiceImpl implements MovieService {
 
     private final MovieRepository movieRepository;
 
     @Override
-    public Page<Movie> getAll(int page, int size) {
+    public Pagination<Movie> getAll(int page, int size) {
+        if (page < 0 || size < 1) {
+            throw new NotFoundException("Page can't be less than 0. Size can't be less than 1");
+        }
 
-        Pageable pageable = PageRequest.of(page - 1, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("title"));
 
-        Page<Movie> moviePagination = movieRepository.findAll(pageable);
+        Pagination<Movie> moviePagination = convertToPagination(movieRepository.findAll(pageable));
 
-        if (page > moviePagination.getTotalPages()) {
+        if (page >= moviePagination.getMaxPage()) {
             throw new NotFoundException("Page " + page + " not found");
         }
+
+        return moviePagination;
+    }
+
+    @Override
+    public Pagination<Movie> getAllByGenre(int page, int size, int genreId) {
+        if (page < 0 || size < 1) {
+            throw new NotFoundException("Page can't be less than 0. Size can't be less than 1");
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Pagination<Movie> moviePagination = convertToPagination(movieRepository.findMoviesByGenreId(genreId, pageable));
+
+        if (page >= moviePagination.getMaxPage()) {
+            throw new NotFoundException("Page " + page + " not found");
+        }
+
         return moviePagination;
     }
 
@@ -43,14 +66,16 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     @Transactional
-    public Movie create(Movie movie) {
-        movie.setId(null);
+    public Movie save(Movie movie) {
+        if (movie.getId() != null && !movieRepository.existsById(movie.getId())) {
+            throw new NotFoundException("Movie id: " + movie.getId() + " not found");
+        }
 
-        List<Movie> movies = movieRepository.findMoviesByTitle(movie.getTitle());
+        List<Movie> movies = movieRepository.findByTitle(movie.getTitle());
 
-        for (Movie m : movies) {
-            if (movie.equals(m)) {
-                throw new MethodNotAllowedException("Movie name:" + m.getTitle() + " already exists with id: " + m.getId());
+        for (Movie dbMovie : movies) {
+            if (movie.equals(dbMovie)) {
+                throw new BadRequestException("Movie name:" + dbMovie.getTitle() + " already exists");
             }
         }
 
@@ -59,18 +84,22 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     @Transactional
-    public Movie update(Movie movie, Integer id) {
-        movie.setId(id);
+    public void delete(Integer id) {
+        if (!movieRepository.existsById(id)) {
+            throw new NotFoundException("Movie id: " + id + " not found");
+        }
 
-        Optional<Movie> dbMovie = movieRepository.findById(movie.getId());
-        dbMovie.orElseThrow(() -> new NotFoundException("Movie id: " + movie.getId() + " not found"));
-
-        return movieRepository.save(movie);
+        movieRepository.deleteById(id);
     }
 
-    @Override
-    @Transactional
-    public void delete(Integer id) {
-        movieRepository.deleteById(id);
+    private Pagination<Movie> convertToPagination(Page<Movie> moviePage) {
+        Pagination<Movie> pagination = new Pagination<>();
+
+        pagination.setLocalPage(moviePage.getNumber());
+        pagination.setMaxPage(moviePage.getTotalPages());
+        pagination.setSize(moviePage.getSize());
+        pagination.setObjects(moviePage.getContent());
+
+        return pagination;
     }
 }

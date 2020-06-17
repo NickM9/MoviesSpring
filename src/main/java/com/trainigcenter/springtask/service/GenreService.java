@@ -11,11 +11,7 @@ public interface GenreService {
 
     Optional<Genre> getById(Integer id);
 
-    Genre create(Genre genre);
-
-    Genre update(Genre genre, Integer id);
-
-    Optional<Genre> getByIdWithMovies(Integer id);
+    Genre save(Genre genre);
 
     void delete(Integer id);
 }

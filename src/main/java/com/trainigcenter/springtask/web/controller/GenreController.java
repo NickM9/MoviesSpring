@@ -1,11 +1,11 @@
 package com.trainigcenter.springtask.web.controller;
 
 import com.trainigcenter.springtask.domain.Genre;
+import com.trainigcenter.springtask.domain.exception.NotFoundException;
 import com.trainigcenter.springtask.service.GenreService;
 import com.trainigcenter.springtask.web.dto.GenreDto;
-import com.trainigcenter.springtask.web.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 @RequestMapping("/genres")
 public class GenreController {
 
@@ -40,31 +40,30 @@ public class GenreController {
     }
 
     @GetMapping("/{id}")
-    public GenreDto getGenreById(@PathVariable("id") int id) {
-        Genre genre = genreService.getById(id).orElseThrow(() -> new NotFoundException("Genre id:" + id + " not found"));
-        return convertToDto(genre);
+    public GenreDto getById(@PathVariable("id") int id) {
+        return convertToDto(genreService.getById(id).orElseThrow(() -> new NotFoundException("Genre id:" + id + " not found")));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public GenreDto saveGenre(@Valid @RequestBody GenreDto genreDto) {
-        Genre genre = genreService.create(convertFromDto(genreDto));
+    public GenreDto create(@Valid @RequestBody GenreDto genreDto) {
+        genreDto.setId(null);
+        Genre genre = genreService.save(convertFromDto(genreDto));
         return convertToDto(genre);
     }
 
     @PutMapping("/{id}")
-    public GenreDto updateGenre(@PathVariable("id") int id,
-                                @Valid @RequestBody GenreDto genreDto) {
-
-        Genre genre = convertFromDto(genreDto);
-        return convertToDto(genreService.update(genre, id));
+    public GenreDto update(@PathVariable("id") int id,
+                           @Valid @RequestBody GenreDto genreDto) {
+        genreDto.setId(id);
+        Genre genre = genreService.save(convertFromDto(genreDto));
+        return convertToDto(genre);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteGenre(@PathVariable("id") Integer id) {
-        Genre genre = genreService.getByIdWithMovies(id).orElseThrow(() -> new NotFoundException("Genre id:" + id + " not found"));
-        genreService.delete(genre.getId());
+    public void delete(@PathVariable("id") Integer id) {
+        genreService.delete(id);
     }
 
     private GenreDto convertToDto(Genre genre) {
@@ -74,5 +73,4 @@ public class GenreController {
     private Genre convertFromDto(GenreDto genreDto) {
         return modelMapper.map(genreDto, Genre.class);
     }
-
 }

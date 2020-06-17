@@ -5,8 +5,10 @@ services:
   app:
     build: ./
     container_name: app
+    restart: always
     ports:
-      - "8080:8080"
+      - 8080:8080
+      - 8000:8000
     depends_on:
       - db
 

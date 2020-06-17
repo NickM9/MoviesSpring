@@ -1,13 +1,13 @@
 package com.trainigcenter.springtask.web.controller;
 
 import com.trainigcenter.springtask.domain.Movie;
+import com.trainigcenter.springtask.domain.Pagination;
+import com.trainigcenter.springtask.domain.exception.NotFoundException;
 import com.trainigcenter.springtask.service.MovieService;
 import com.trainigcenter.springtask.web.dto.MovieDto;
-import com.trainigcenter.springtask.web.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,10 +21,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 @RequestMapping("/movies")
 public class MovieController {
 
@@ -32,42 +34,44 @@ public class MovieController {
     private final ModelMapper modelMapper;
 
     @GetMapping
-    public Page<MovieDto> getAll(@RequestParam(value = "page", required = false, defaultValue = "1") int page,
-                                 @RequestParam(value = "size", required = false, defaultValue = "2") int size) {
-
-        if (page < 1 || size < 1) {
-            throw new NotFoundException("Page and size can't be less than 1");
-        }
-
+    public Pagination<MovieDto> getAll(@RequestParam(value = "page", required = false, defaultValue = "0") int page,
+                                       @RequestParam(value = "size", required = false, defaultValue = "2") int size) {
         return convertToPaginationDto(movieService.getAll(page, size));
     }
 
+
+    @GetMapping(params = "genreId")
+    public Pagination<MovieDto> getAllByGenre(@RequestParam(value = "page", required = false, defaultValue = "0") int page,
+                                              @RequestParam(value = "size", required = false, defaultValue = "2") int size,
+                                              @RequestParam(value = "genreId") int genreId) {
+        return convertToPaginationDto(movieService.getAllByGenre(page, size, genreId));
+    }
+
     @GetMapping("/{id}")
-    public MovieDto getMovieById(@PathVariable("id") int id) {
-        Movie movie = movieService.getById(id).orElseThrow(() -> new NotFoundException("Movie id:" + id + " not found"));
-        return convertToDto(movie);
+    public MovieDto getById(@PathVariable("id") int id) {
+        return convertToDto(movieService.getById(id).orElseThrow(() -> new NotFoundException("Movie id:" + id + " not found")));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public MovieDto saveMovie(@Valid @RequestBody MovieDto movieDto) {
-        Movie movie = movieService.create(convertFromDto(movieDto));
+    public MovieDto save(@Valid @RequestBody MovieDto movieDto) {
+        movieDto.setId(null);
+        Movie movie = movieService.save(convertFromDto(movieDto));
         return convertToDto(movie);
     }
 
     @PutMapping("/{id}")
-    public MovieDto updateMovie(@PathVariable("id") int id,
-                                @Valid @RequestBody MovieDto movieDto) {
-
-        Movie movie = convertFromDto(movieDto);
-        return convertToDto(movieService.update(movie, id));
+    public MovieDto update(@PathVariable("id") int id,
+                           @Valid @RequestBody MovieDto movieDto) {
+        movieDto.setId(id);
+        Movie movie = movieService.save(convertFromDto(movieDto));
+        return convertToDto(movie);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteMovie(@PathVariable("id") Integer id) {
-        Movie movie = movieService.getById(id).orElseThrow(() -> new NotFoundException("Movie id: " + id + " not found"));
-        movieService.delete(movie.getId());
+    public void delete(@PathVariable("id") Integer id) {
+        movieService.delete(id);
     }
 
     private MovieDto convertToDto(Movie movie) {
@@ -78,7 +82,19 @@ public class MovieController {
         return modelMapper.map(movieDto, Movie.class);
     }
 
-    private Page<MovieDto> convertToPaginationDto(Page<Movie> moviePagination) {
-        return moviePagination.map(this::convertToDto);
+    private Pagination<MovieDto> convertToPaginationDto(Pagination<Movie> moviePagination) {
+        List<MovieDto> moviesDto = moviePagination.getObjects()
+                                                  .stream()
+                                                  .map(this::convertToDto)
+                                                  .collect(Collectors.toList());
+
+        Pagination<MovieDto> paginationDto = new Pagination<>();
+
+        paginationDto.setLocalPage(moviePagination.getLocalPage());
+        paginationDto.setMaxPage(moviePagination.getMaxPage());
+        paginationDto.setSize(moviePagination.getSize());
+        paginationDto.setObjects(moviesDto);
+
+        return paginationDto;
     }
 }

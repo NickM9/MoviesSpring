@@ -1,12 +1,12 @@
 package com.trainigcenter.springtask.service.impl;
 
 import com.trainigcenter.springtask.domain.Genre;
+import com.trainigcenter.springtask.domain.exception.BadRequestException;
+import com.trainigcenter.springtask.domain.exception.NotFoundException;
 import com.trainigcenter.springtask.persistence.GenreRepository;
 import com.trainigcenter.springtask.service.GenreService;
-import com.trainigcenter.springtask.web.exception.MethodNotAllowedException;
-import com.trainigcenter.springtask.web.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Log4j2
+@Slf4j
 @RequiredArgsConstructor
 public class GenreServiceImpl implements GenreService {
 
@@ -26,19 +26,19 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
-    public Optional<Genre> getById(Integer genreId) {
-        return genreRepository.findById(genreId);
+    public Optional<Genre> getById(Integer id) {
+        return genreRepository.findById(id);
     }
 
     @Override
     @Transactional
-    public Genre create(Genre genre) {
-        genre.setId(null);
+    public Genre save(Genre genre) {
+        if (genre.getId() != null && !genreRepository.existsById(genre.getId())) {
+            throw new NotFoundException("Genre id: " + genre.getId() + " not found");
+        }
 
-        Optional<Genre> dbGenre = genreRepository.findByNameIgnoreCase(genre.getName());
-
-        if (dbGenre.isPresent()) {
-            throw new MethodNotAllowedException("Genre name: " + dbGenre.get().getName() + " already exists with id: " + dbGenre.get().getId());
+        if (genreRepository.existsByNameIgnoreCase(genre.getName())) {
+            throw new BadRequestException("Genre name: " + genre.getName() + " is already exists");
         }
 
         return genreRepository.save(genre);
@@ -46,27 +46,11 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     @Transactional
-    public Genre update(Genre genre, Integer id) {
-        genre.setId(id);
-
-        Optional<Genre> dbGenre = genreRepository.findById(genre.getId());
-        dbGenre.orElseThrow(() -> new NotFoundException("Genre id: " + genre.getId() + " not found"));
-
-        return genreRepository.save(genre);
-    }
-
-    @Override
-    public Optional<Genre> getByIdWithMovies(Integer id) {
-        return genreRepository.findWithMoviesById(id);
-    }
-
-    @Override
-    @Transactional
     public void delete(Integer id) {
-        Genre genre = getByIdWithMovies(id).get();
+        Genre genre = genreRepository.findWithMoviesById(id).orElseThrow(() -> new NotFoundException("Genre id:" + id + " not found"));
 
         if (!genre.getGenreMovies().isEmpty()) {
-            throw new MethodNotAllowedException("Genre id: " + id + " take part in movies");
+            throw new BadRequestException("Genre id: " + id + " take part in movies");
         }
 
         genreRepository.deleteById(genre.getId());
