@@ -1,5 +1,7 @@
 package com.trainigcenter.springtask.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,9 +17,9 @@ import java.util.Objects;
 import java.util.Set;
 
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "actors")
 public class Actor {

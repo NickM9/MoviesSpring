@@ -49,7 +49,7 @@ CREATE TABLE dockerspringmovies.reviews
     author_name character varying(45) NOT NULL,
     title character varying(45) NOT NULL,
     text text NOT NULL,
-    rating double precision NOT NULL,
+    rating integer NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (movie_id)
         REFERENCES dockerspringmovies.movies (id) MATCH SIMPLE
@@ -104,7 +104,7 @@ ALTER TABLE dockerspringmovies.movie_genres
     OWNER to postgres;
 
 -- some start scripts
-INSERT INTO dockerspringmovies.actors(name, birth_year) VALUES ('Robert Downey Jr.', 1965);
+INSERT INTO dockerspringmovies.actors(name, birth_year) VALUES ('Robert Downey Jr', 1965);
 INSERT INTO dockerspringmovies.actors(name, birth_year) VALUES ('Chris Evans', 1981);
 INSERT INTO dockerspringmovies.actors(name, birth_year) VALUES ('Chris Hemsworth', 1983);
 
@@ -115,7 +115,7 @@ INSERT INTO dockerspringmovies.genres(name) VALUES ('Science fiction');
 INSERT INTO dockerspringmovies.movies(title, description, duration) VALUES ('The Avengers', 'Avengers description. Very good!', 8520);
 
 INSERT INTO dockerspringmovies.reviews(movie_id, author_name, title, text, rating)
-	VALUES (1, 'Joe Russo', 'Tittle, very good film!', 'The big text abount The avengers film', 8.7);
+	VALUES (1, 'Joe Russo', 'Tittle, very good film!', 'The big text abount The avengers film', 8);
 
 INSERT INTO dockerspringmovies.movie_actors(movie_id, actor_id) VALUES (1, 1);
 INSERT INTO dockerspringmovies.movie_actors(movie_id, actor_id) VALUES (1, 2);

@@ -39,8 +39,11 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("rating"));
-
         Pagination<Review> reviewsPagination = convertToPagination(reviewRepository.findAllByMovieId(movieId, pageable));
+
+        if (reviewsPagination.getObjects().isEmpty()){
+            throw new NotFoundException("There are no reviews for movie id: " + movieId);
+        }
 
         if (page >= reviewsPagination.getMaxPage()) {
             throw new NotFoundException("Page " + page + " not found");
@@ -56,7 +59,13 @@ public class ReviewServiceImpl implements ReviewService {
             throw new NotFoundException("Movie id:" + movieId + " not found");
         }
 
-        return reviewRepository.findById(id);
+        Optional<Review> review = reviewRepository.findById(id);
+
+        if (review.get().getMovie().getId() != movieId) {
+            throw new NotFoundException("There id no review id " + review.get().getId() + " for movie id " + review.get().getMovie().getId());
+        }
+
+        return review;
     }
 
     @Override
@@ -65,12 +74,16 @@ public class ReviewServiceImpl implements ReviewService {
         Movie movie = movieRepository.findById(movieId).orElseThrow(() -> new NotFoundException("Movie id:" + movieId + " not found"));
         review.setMovie(movie);
 
-        if (review.getId() != null && !reviewRepository.existsById(review.getId())) {
-            throw new NotFoundException("Review id:" + review.getId() + " not found");
+        if (review.getId() != null) {
+            Review dbReview = reviewRepository.findById(review.getId()).orElseThrow(() -> new NotFoundException("Review id:" + review.getId() + " not found"));
+
+            if (dbReview.getMovie().getId() != movieId) {
+                throw new NotFoundException("There id no review id " + dbReview.getId() + " for movie id " + movieId);
+            }
         }
 
         if (review.getId() == null && reviewRepository.existsByMovieIdAndAuthorName(review.getMovie().getId(), review.getAuthorName())) {
-            throw new BadRequestException("Review id:" + review.getId() + " already exists");
+            throw new BadRequestException("Review from author" + review.getAuthorName() + " already exists");
         }
 
         return reviewRepository.save(review);
@@ -83,8 +96,10 @@ public class ReviewServiceImpl implements ReviewService {
             throw new NotFoundException("Movie id:" + movieId + " not found");
         }
 
-        if (!reviewRepository.existsById(id)) {
-            throw new NotFoundException("Review id:" + id + " not found");
+        Review dbReview = reviewRepository.findById(id).orElseThrow(() -> new NotFoundException("Review id:" + id + " not found"));
+
+        if (dbReview.getMovie().getId() != movieId){
+            throw new NotFoundException("There id no review id " + dbReview.getId() + " for movie id " + movieId);
         }
 
         reviewRepository.deleteById(id);
@@ -93,7 +108,7 @@ public class ReviewServiceImpl implements ReviewService {
     private Pagination<Review> convertToPagination(Page<Review> reviewPage) {
         Pagination<Review> pagination = new Pagination<>();
 
-        pagination.setLocalPage(reviewPage.getNumber());
+        pagination.setPage(reviewPage.getNumber());
         pagination.setMaxPage(reviewPage.getTotalPages());
         pagination.setSize(reviewPage.getSize());
         pagination.setObjects(reviewPage.getContent());

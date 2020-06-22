@@ -5,9 +5,9 @@ import com.trainigcenter.springtask.domain.Pagination;
 import com.trainigcenter.springtask.domain.exception.NotFoundException;
 import com.trainigcenter.springtask.service.MovieService;
 import com.trainigcenter.springtask.web.dto.MovieDto;
+import com.trainigcenter.springtask.web.dto.mapper.MovieMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class MovieController {
 
     private final MovieService movieService;
-    private final ModelMapper modelMapper;
+    private final MovieMapper mapper;
 
     @GetMapping
     public Pagination<MovieDto> getAll(@RequestParam(value = "page", required = false, defaultValue = "0") int page,
@@ -49,23 +49,23 @@ public class MovieController {
 
     @GetMapping("/{id}")
     public MovieDto getById(@PathVariable("id") int id) {
-        return convertToDto(movieService.getById(id).orElseThrow(() -> new NotFoundException("Movie id:" + id + " not found")));
+        return mapper.toDto(movieService.getById(id).orElseThrow(() -> new NotFoundException("Movie id:" + id + " not found")));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public MovieDto save(@Valid @RequestBody MovieDto movieDto) {
         movieDto.setId(null);
-        Movie movie = movieService.save(convertFromDto(movieDto));
-        return convertToDto(movie);
+        Movie movie = movieService.save(mapper.fromDto(movieDto));
+        return mapper.toDto(movie);
     }
 
     @PutMapping("/{id}")
     public MovieDto update(@PathVariable("id") int id,
                            @Valid @RequestBody MovieDto movieDto) {
         movieDto.setId(id);
-        Movie movie = movieService.save(convertFromDto(movieDto));
-        return convertToDto(movie);
+        Movie movie = movieService.save(mapper.fromDto(movieDto));
+        return mapper.toDto(movie);
     }
 
     @DeleteMapping("/{id}")
@@ -74,23 +74,15 @@ public class MovieController {
         movieService.delete(id);
     }
 
-    private MovieDto convertToDto(Movie movie) {
-        return modelMapper.map(movie, MovieDto.class);
-    }
-
-    private Movie convertFromDto(MovieDto movieDto) {
-        return modelMapper.map(movieDto, Movie.class);
-    }
-
     private Pagination<MovieDto> convertToPaginationDto(Pagination<Movie> moviePagination) {
         List<MovieDto> moviesDto = moviePagination.getObjects()
                                                   .stream()
-                                                  .map(this::convertToDto)
+                                                  .map(movie -> mapper.toDto(movie))
                                                   .collect(Collectors.toList());
 
         Pagination<MovieDto> paginationDto = new Pagination<>();
 
-        paginationDto.setLocalPage(moviePagination.getLocalPage());
+        paginationDto.setPage(moviePagination.getPage());
         paginationDto.setMaxPage(moviePagination.getMaxPage());
         paginationDto.setSize(moviePagination.getSize());
         paginationDto.setObjects(moviesDto);

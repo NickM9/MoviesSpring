@@ -1,5 +1,6 @@
 package com.trainigcenter.springtask.web.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class ReviewDto {
 
     private Integer id;
@@ -28,6 +30,6 @@ public class ReviewDto {
 
     @Min(1)
     @Max(10)
-    private double rating;
+    private int rating;
 
 }

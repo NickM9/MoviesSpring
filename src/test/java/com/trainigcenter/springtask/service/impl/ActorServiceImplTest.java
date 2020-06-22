@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -37,56 +36,32 @@ public class ActorServiceImplTest {
     }
 
     @Test
-    public void testGetAll() {
+    public void testGetAllVerifyFindAll1Time() {
+        when(actorRepository.findAll()).thenReturn(List.of());
+        actorService.getAll();
+
+        verify(actorRepository, times(1)).findAll();
+    }
+
+    @Test
+    public void testGetByIdVerifyFindById1Time() {
+        int id = anyInt();
+        when(actorRepository.findById(id)).thenReturn(Optional.of(new Actor()));
+        actorService.getById(id);
+
+        verify(actorRepository, times(1)).findById(id);
+    }
+
+    @Test
+    public void testSaveVerifySave1Time() {
         Actor actor = new Actor();
-        List<Actor> expected = List.of(actor);
+        actorService.save(actor);
 
-        when(actorRepository.findAll()).thenReturn(expected);
-        List<Actor> actual = actorService.getAll();
-
-        assertEquals(expected, actual);
+        verify(actorRepository, times(1)).save(actor);
     }
 
     @Test
-    public void testGetById() {
-        Actor expected = new Actor();
-        expected.setId(anyInt());
-
-        when(actorRepository.findById(expected.getId())).thenReturn(Optional.of(expected));
-        Actor actual = actorService.getById(expected.getId()).get();
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testSaveNew() {
-        Actor expected = new Actor();
-        expected.setName(anyString());
-
-        when(actorRepository.existsByNameIgnoreCase(expected.getName())).thenReturn(false);
-        when(actorService.save(expected)).thenReturn(expected);
-        Actor actual = actorService.save(expected);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testSaveUpdate() {
-        Actor expected = new Actor();
-        expected.setId(anyInt());
-        when(actorRepository.existsById(expected.getId())).thenReturn(true);
-
-        expected.setName(anyString());
-        when(actorRepository.existsByNameIgnoreCase(expected.getName())).thenReturn(false);
-
-        when(actorRepository.save(expected)).thenReturn(expected);
-        Actor actual = actorService.save(expected);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testSaveThrowNotFoundException() {
+    public void testSaveThrowNotFoundExceptionIfExistsByIdTrue() {
         Actor actor = new Actor();
         actor.setId(anyInt());
         when(actorRepository.existsById(actor.getId())).thenReturn(false);
@@ -95,18 +70,16 @@ public class ActorServiceImplTest {
     }
 
     @Test
-    public void testSaveThrowBadRequestException() {
+    public void testSaveThrowBadRequestExceptionIfExistsByNameTrue() {
         Actor actor = new Actor();
         actor.setName(anyString());
-
         when(actorRepository.existsByNameIgnoreCase(actor.getName())).thenReturn(true);
-        when(actorRepository.save(actor)).thenReturn(actor);
 
         assertThrows(BadRequestException.class, () -> actorService.save(actor));
     }
 
     @Test
-    public void testDeleteVerify1Times() {
+    public void testDeleteVerifyDelete1Time() {
         Actor actor = new Actor();
         actor.setId(anyInt());
         actor.setActorMovies(Set.of());
@@ -118,17 +91,16 @@ public class ActorServiceImplTest {
     }
 
     @Test
-    public void testDeleteThrowNotFoundException() {
+    public void testDeleteThrowNotFoundExceptionIfFindWithMoviesByIdOptionalEmpty() {
         Actor actor = new Actor();
         actor.setId(anyInt());
-
         when(actorRepository.findWithMoviesById(actor.getId())).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> actorService.delete(actor.getId()));
     }
 
     @Test
-    public void testDeleteThrowBadRequestException() {
+    public void testDeleteThrowBadRequestExceptionIfGenreGetMoviesNotEmpty() {
         Actor actor = new Actor();
         actor.setId(anyInt());
         actor.setActorMovies(Set.of(new Movie()));

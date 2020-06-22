@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -37,56 +36,32 @@ public class GenreServiceImplTest {
     }
 
     @Test
-    public void testGetAll() {
+    public void testGetAllVerifyFindAll1Time() {
+        when(genreRepository.findAll()).thenReturn(List.of());
+        genreService.getAll();
+
+        verify(genreRepository, times(1)).findAll();
+    }
+
+    @Test
+    public void testGetByIdVerifyFindById1Time() {
+        int id = anyInt();
+        when(genreRepository.findById(id)).thenReturn(Optional.of(new Genre()));
+        genreService.getById(id);
+
+        verify(genreRepository, times(1)).findById(id);
+    }
+
+    @Test
+    public void testSaveVerifySave1Time() {
         Genre genre = new Genre();
-        List<Genre> expected = List.of(genre);
+        genreService.save(genre);
 
-        when(genreRepository.findAll()).thenReturn(expected);
-        List<Genre> actual = genreService.getAll();
-
-        assertEquals(expected, actual);
+        verify(genreRepository, times(1)).save(genre);
     }
 
     @Test
-    public void testGetById() {
-        Genre expected = new Genre();
-        expected.setId(anyInt());
-
-        when(genreRepository.findById(expected.getId())).thenReturn(Optional.of(expected));
-        Genre actual = genreService.getById(expected.getId()).get();
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testSaveNew() {
-        Genre expected = new Genre();
-        expected.setName(anyString());
-
-        when(genreRepository.existsByNameIgnoreCase(expected.getName())).thenReturn(false);
-        when(genreRepository.save(expected)).thenReturn(expected);
-        Genre actual = genreService.save(expected);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testSaveUpdate() {
-        Genre expected = new Genre();
-        expected.setId(anyInt());
-        when(genreRepository.existsById(expected.getId())).thenReturn(true);
-
-        expected.setName(anyString());
-        when(genreRepository.existsByNameIgnoreCase(expected.getName())).thenReturn(false);
-
-        when(genreRepository.save(expected)).thenReturn(expected);
-        Genre actual = genreService.save(expected);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testSaveThrowNotFoundException() {
+    public void testSaveThrowNotFoundExceptionIfNotExistsById() {
         Genre genre = new Genre();
         genre.setId(anyInt());
         when(genreRepository.existsById(genre.getId())).thenReturn(false);
@@ -95,18 +70,16 @@ public class GenreServiceImplTest {
     }
 
     @Test
-    public void testSaveThrowBadRequestException() {
+    public void testSaveThrowBadRequestExceptionIfNotExistsByName() {
         Genre genre = new Genre();
         genre.setName(anyString());
-
         when(genreRepository.existsByNameIgnoreCase(genre.getName())).thenReturn(true);
-        when(genreRepository.save(genre)).thenReturn(genre);
 
         assertThrows(BadRequestException.class, () -> genreService.save(genre));
     }
 
     @Test
-    public void testDeleteVerify1Times() {
+    public void testDeleteVerifyDelete1Time() {
         Genre genre = new Genre();
         genre.setId(anyInt());
         genre.setGenreMovies(Set.of());
@@ -118,17 +91,16 @@ public class GenreServiceImplTest {
     }
 
     @Test
-    public void testDeleteThrowNotFoundException() {
+    public void testDeleteThrowNotFoundExceptionIfNotFindWithMoviesById() {
         Genre genre = new Genre();
         genre.setId(anyInt());
-
         when(genreRepository.findWithMoviesById(genre.getId())).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> genreService.delete(genre.getId()));
     }
 
     @Test
-    public void testDeleteThrowBadRequestException() {
+    public void testDeleteThrowBadRequestExceptionIfGenreGetMoviesNotEmpty() {
         Genre genre = new Genre();
         genre.setId(anyInt());
         genre.setGenreMovies(Set.of(new Movie()));

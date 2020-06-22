@@ -1,6 +1,8 @@
 package com.trainigcenter.springtask.domain.exception;
 
 import com.trainigcenter.springtask.web.dto.Error;
+import com.trainigcenter.springtask.web.dto.ErrorField;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,15 +20,21 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
+    protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        Error error = new Error(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   HttpHeaders headers,
                                                                   HttpStatus status,
                                                                   WebRequest request) {
 
-        List<String> details = ex.getBindingResult().getFieldErrors()
-                                 .stream()
-                                 .map(err -> err.getField() + " : " + err.getRejectedValue() + " : " + err.getDefaultMessage())
-                                 .collect(Collectors.toList());
+        List<ErrorField> details = ex.getBindingResult().getFieldErrors()
+                                     .stream()
+                                     .map(err -> new ErrorField(err.getField(), err.getRejectedValue().toString(), err.getDefaultMessage()))
+                                     .collect(Collectors.toList());
 
         Error error = new Error(HttpStatus.BAD_REQUEST.value(), "validation error", details);
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
@@ -41,7 +49,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             details.add(stackTrace.toString());
         }
 
-        Error error = new Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Server error", details);
+        Error error = new Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Server error");
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -50,6 +58,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         Error error = new Error(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
+
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Object> handleNotFoundException(NotFoundException e, WebRequest request) {

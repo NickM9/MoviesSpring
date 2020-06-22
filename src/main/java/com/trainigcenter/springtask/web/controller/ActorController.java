@@ -4,9 +4,9 @@ import com.trainigcenter.springtask.domain.Actor;
 import com.trainigcenter.springtask.domain.exception.NotFoundException;
 import com.trainigcenter.springtask.service.ActorService;
 import com.trainigcenter.springtask.web.dto.ActorDto;
+import com.trainigcenter.springtask.web.dto.mapper.ActorMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,48 +29,40 @@ import java.util.stream.Collectors;
 public class ActorController {
 
     private final ActorService actorService;
-    private final ModelMapper modelMapper;
+    private final ActorMapper mapper;
 
     @GetMapping
     public List<ActorDto> getAll() {
         return actorService.getAll()
                            .stream()
-                           .map(this::convertToDto)
+                           .map(actor -> mapper.toDto(actor))
                            .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public ActorDto getById(@PathVariable Integer id) {
-        return convertToDto(actorService.getById(id).orElseThrow(() -> new NotFoundException("Actor id:" + id + " not found")));
+        return mapper.toDto(actorService.getById(id).orElseThrow(() -> new NotFoundException("Actor id:" + id + " not found")));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ActorDto save(@Valid @RequestBody ActorDto actorDto) {
         actorDto.setId(null);
-        Actor actor = actorService.save(convertFromDto(actorDto));
-        return convertToDto(actor);
+        Actor actor = actorService.save(mapper.fromDto(actorDto));
+        return mapper.toDto(actor);
     }
 
     @PutMapping("/{id}")
     public ActorDto update(@PathVariable("id") int id,
                            @Valid @RequestBody ActorDto actorDto) {
         actorDto.setId(id);
-        Actor actor = actorService.save(convertFromDto(actorDto));
-        return convertToDto(actor);
+        Actor actor = actorService.save(mapper.fromDto(actorDto));
+        return mapper.toDto(actor);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("id") Integer id) {
         actorService.delete(id);
-    }
-
-    private ActorDto convertToDto(Actor actor) {
-        return modelMapper.map(actor, ActorDto.class);
-    }
-
-    private Actor convertFromDto(ActorDto actorDto) {
-        return modelMapper.map(actorDto, Actor.class);
     }
 }

@@ -33,11 +33,15 @@ public class ActorServiceImpl implements ActorService {
     @Override
     @Transactional
     public Actor save(Actor actor) {
-        if (actor.getId() != null && !actorRepository.existsById(actor.getId())) {
-            throw new NotFoundException("Actor id: " + actor.getId() + " not found");
+        Actor dbActor = null;
+
+        if (actor.getId() != null) {
+            dbActor = actorRepository.findById(actor.getId()).orElseThrow(() -> new NotFoundException("Actor id: " + actor.getId() + " not found"));
         }
 
-        if (actorRepository.existsByNameIgnoreCase(actor.getName())) {
+        if ( (dbActor == null && actorRepository.existsByNameIgnoreCase(actor.getName()))
+          || (dbActor != null && !actor.getName().equals(dbActor.getName())) ) {
+
             throw new BadRequestException("Actor name: " + actor.getName() + " already exists");
         }
 

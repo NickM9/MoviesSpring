@@ -1,9 +1,9 @@
 package com.trainigcenter.springtask.domain;
 
 
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,9 +14,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "reviews")
 public class Review {
@@ -32,6 +32,6 @@ public class Review {
     private String authorName;
     private String title;
     private String text;
-    private double rating;
+    private int rating;
 
 }

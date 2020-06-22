@@ -95,7 +95,7 @@ public class MovieServiceImpl implements MovieService {
     private Pagination<Movie> convertToPagination(Page<Movie> moviePage) {
         Pagination<Movie> pagination = new Pagination<>();
 
-        pagination.setLocalPage(moviePage.getNumber());
+        pagination.setPage(moviePage.getNumber());
         pagination.setMaxPage(moviePage.getTotalPages());
         pagination.setSize(moviePage.getSize());
         pagination.setObjects(moviePage.getContent());

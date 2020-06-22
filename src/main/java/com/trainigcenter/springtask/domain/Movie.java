@@ -1,6 +1,8 @@
 package com.trainigcenter.springtask.domain;
 
 import com.trainigcenter.springtask.domain.converter.DurationConverter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,9 +23,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "movies")
 public class Movie {
